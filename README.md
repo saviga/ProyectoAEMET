@@ -71,7 +71,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 Una vez que la API está funcionando, puedes interactuar con ella a través de dos endpoints principales: Forecast(para predicciones) y Ask(para recibir información de históricos)
 
 	Desde Streamlit APP:
-		(Provisional) https://proyecto-aemet-mun7ecniqswapp7s9ljznnz.streamlit.app/  
+		https://proyecto-final-hack-a-bossgit-wx2inpdg5kukgh6xymcwkh.streamlit.app/
 	
 	Desde Consola:
 		Endpoint 1: Predicción de Temperatura
