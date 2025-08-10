@@ -1398,7 +1398,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 return output
         
         # Interfaz de usuario para predicción
-        pred_col1, pred_col2, pred_col3 = st.columns([1, 1, 1])
+        pred_col1, pred_col3 = st.columns([1, 1])
         
         with pred_col1:
             dias_prediccion = st.selectbox(
@@ -1408,22 +1408,13 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 help="Número de días futuros a predecir"
             )
         
-        with pred_col2:
-            confianza_nivel = st.slider(
-                "📊 Nivel de confianza:",
-                min_value=80,
-                max_value=99,
-                value=95,
-                step=5,
-                help="Nivel de confianza para intervalos de predicción"
-            )
         
-        with pred_col3:
-            validacion_avanzada = st.checkbox(
-                "🔍 Validación avanzada",
-                value=True,
-                help="Realizar validaciones adicionales de calidad"
-            )
+        #with pred_col3:
+            #validacion_avanzada = (
+                #"🔍 Validación avanzada",
+                
+                
+           # )
         
         # Botón de predicción
         if st.button("🚀 Generar Predicción Profesional", type="primary", use_container_width=True):
@@ -1708,13 +1699,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                                     torch.FloatTensor(new_day_scaled).unsqueeze(0).unsqueeze(0)
                                                 ], dim=1)
                                 
-                                # === 6. CÁLCULO DE INTERVALOS DE CONFIANZA ===
-                                # Basado en la desviación estándar del error del modelo
-                                model_std = 1.89  # RMSE del modelo
-                                z_score = 1.96 if confianza_nivel == 95 else (2.58 if confianza_nivel == 99 else 1.645)
                                 
-                                intervalos_inf = [pred - z_score * model_std for pred in predicciones]
-                                intervalos_sup = [pred + z_score * model_std for pred in predicciones]
                                 
                                 # === 7. PRESENTACIÓN DE RESULTADOS ===
                                 
@@ -1722,8 +1707,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                 df_prediccion = pd.DataFrame({
                                     'Fecha': fechas_pred,
                                     'Temperatura_Predicha': [round(p, 1) for p in predicciones],
-                                    'Limite_Inferior': [round(inf, 1) for inf in intervalos_inf],
-                                    'Limite_Superior': [round(sup, 1) for sup in intervalos_sup]
+                                   
                                 })
                                 
                                 # Métricas de resumen
@@ -1772,26 +1756,9 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                     marker=dict(size=8, symbol='star')
                                 ))
                                 
-                                # Intervalo de confianza
-                                fig_pred.add_trace(go.Scatter(
-                                    x=df_prediccion['Fecha'],
-                                    y=df_prediccion['Limite_Superior'],
-                                    mode='lines',
-                                    line=dict(width=0),
-                                    showlegend=False,
-                                    hoverinfo='skip'
-                                ))
+                            
                                 
-                                fig_pred.add_trace(go.Scatter(
-                                    x=df_prediccion['Fecha'],
-                                    y=df_prediccion['Limite_Inferior'],
-                                    mode='lines',
-                                    line=dict(width=0),
-                                    fill='tonexty',
-                                    fillcolor='rgba(255, 107, 107, 0.2)',
-                                    name=f'📊 Confianza {confianza_nivel}%',
-                                    hoverinfo='skip'
-                                ))
+                                
                                 
                                 fig_pred.update_layout(
                                     title=dict(
@@ -1824,13 +1791,16 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                 
                                 # Tabla de resultados detallados
                                 st.markdown("#### 📋 Resultados Detallados")
+                                
+                                # Crear DataFrame con formato mejorado
+                                df_display = df_prediccion.copy()
+                                df_display['Temperatura_Predicha'] = df_display['Temperatura_Predicha'].apply(lambda x: f"{x:.1f}°C")
+                                df_display['Fecha'] = df_display['Fecha'].dt.strftime('%d/%m/%Y')
+                                
                                 st.dataframe(
-                                    df_prediccion.style.format({
-                                        'Temperatura_Predicha': '{:.1f}°C',
-                                        'Limite_Inferior': '{:.1f}°C',
-                                        'Limite_Superior': '{:.1f}°C'
-                                    }).background_gradient(subset=['Temperatura_Predicha'], cmap='RdYlBu_r'),
-                                    use_container_width=True
+                                    df_display,
+                                    use_container_width=True,
+                                    hide_index=True
                                 )
                                 
                                 # Información del modelo
@@ -1848,7 +1818,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                     **⚡ Configuración:**
                                     - Secuencia entrada: 90 días
                                     - Predicción: Iterativa día a día
-                                    - Confianza: {confianza_nivel}%
+                                   
                                     
                                     **📈 Features utilizadas:** {', '.join(model_features)}
                                     """)
@@ -2116,7 +2086,7 @@ def main():
         ]
         
         for i, ejemplo in enumerate(ejemplos, 1):
-            st.button(f"📝 {ejemplo}", key=f"ejemplo_{i}", use_container_width=True, disabled=True)
+            st.button(f"📝 {ejemplo}", key=f"ejemplo_{i}", use_container_width=True)
         
         st.markdown("---")
         
@@ -2158,7 +2128,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
 
