@@ -1,8 +1,10 @@
 streamlit
 pandas
 numpy
+torch
 plotly
-python-dotenv
-psycopg2-binary
+joblib
+psycopg2
 sqlalchemy
 requests
+python-dotenv
