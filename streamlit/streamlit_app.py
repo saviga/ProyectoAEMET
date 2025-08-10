@@ -1428,9 +1428,63 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
         if st.button("🚀 Generar Predicción Profesional", type="primary", use_container_width=True):
             with st.spinner("🔄 Cargando modelo y procesando datos..."):
                 try:
-                    # === 1. CARGA DEL MODELO ===
+                    # === 1. CARGA DEL MODELO CON RUTAS CORREGIDAS ===
                     device = torch.device('cpu')
-                    checkpoint = torch.load('production_weather_model.pth', map_location=device)
+                    
+                    # Buscar archivos en múltiples ubicaciones posibles
+                    model_paths = [
+                        'production_weather_model.pth',  # Local
+                        'streamlit/production_weather_model.pth',  # Streamlit Cloud
+                        './streamlit/production_weather_model.pth'  # Alternativa
+                    ]
+                    
+                    scaler_x_paths = [
+                        'scaler_X_production.joblib',
+                        'streamlit/scaler_X_production.joblib',
+                        './streamlit/scaler_X_production.joblib'
+                    ]
+                    
+                    scaler_y_paths = [
+                        'scaler_y_production.joblib',
+                        'streamlit/scaler_y_production.joblib',
+                        './streamlit/scaler_y_production.joblib'
+                    ]
+                    
+                    # Encontrar rutas válidas
+                    model_path = None
+                    scaler_x_path = None
+                    scaler_y_path = None
+                    
+                    for path in model_paths:
+                        if os.path.exists(path):
+                            model_path = path
+                            break
+                    
+                    for path in scaler_x_paths:
+                        if os.path.exists(path):
+                            scaler_x_path = path
+                            break
+                            
+                    for path in scaler_y_paths:
+                        if os.path.exists(path):
+                            scaler_y_path = path
+                            break
+                    
+                    if not all([model_path, scaler_x_path, scaler_y_path]):
+                        missing = []
+                        if not model_path: missing.append("production_weather_model.pth")
+                        if not scaler_x_path: missing.append("scaler_X_production.joblib")
+                        if not scaler_y_path: missing.append("scaler_y_production.joblib")
+                        
+                        st.error(f"❌ Archivos no encontrados: {', '.join(missing)}")
+                        st.info(f"📁 Directorio actual: {os.getcwd()}")
+                        st.info(f"📋 Archivos disponibles: {os.listdir('.')}")
+                        return
+                    
+                    st.success(f"✅ Modelo encontrado en: `{model_path}`")
+                    
+                    # Cargar modelo y scalers
+                    checkpoint = torch.load(model_path, map_location=device)
                     
                     # Crear modelo con arquitectura exacta del entrenamiento
                     config = checkpoint.get('config', {})
@@ -1450,8 +1504,8 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                     model.eval()
                     
                     # Cargar scalers
-                    scaler_X = joblib.load('scaler_X_production.joblib')
-                    scaler_y = joblib.load('scaler_y_production.joblib')
+                    scaler_X = joblib.load(scaler_x_path)
+                    scaler_y = joblib.load(scaler_y_path)
                     
                     # Features del modelo
                     model_features = checkpoint['features']
