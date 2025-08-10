@@ -16,6 +16,7 @@ import os
 from dotenv import load_dotenv
 warnings.filterwarnings('ignore')
 
+
 # Cargar variables de entorno
 load_dotenv()
 
@@ -1676,7 +1677,8 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                             
                                             # Predicción del modelo
                                             with torch.no_grad():
-                                                pred_scaled = model(X_pred).cpu().numpy()[0, 0]
+                                                pred_tensor = model(X_pred).cpu()
+                                                pred_scaled = float(pred_tensor.item())
                                             
                                             # Desnormalizar predicción
                                             pred_temp = scaler_y.inverse_transform([[pred_scaled]])[0, 0]
