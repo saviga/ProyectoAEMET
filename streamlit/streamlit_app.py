@@ -1482,7 +1482,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                         st.info(f"📋 Archivos disponibles: {os.listdir('.')}")
                         return
                     
-                    st.success(f"✅ Modelo encontrado en: `{model_path}`")
+                   
                     
                     # Cargar modelo y scalers
                     checkpoint = torch.load(model_path, map_location=device)
@@ -2158,6 +2158,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
