@@ -2047,10 +2047,19 @@ def main():
         st.markdown("## 🤖 Asistente de Consultas con IA")
         st.info("Pregunta al asistente sobre los datos históricos del clima. Por ejemplo: '¿Cuál fue la temperatura media en Madrid en mayo de 2023?'")
         
-        pregunta = st.text_input("Haz tu pregunta aquí:", key="ask_input", placeholder="Ejemplo: ¿Cuál fue la precipitación total en Valencia en 2022?")
+        # Inicializar el estado si no existe
+        if 'selected_example' not in st.session_state:
+            st.session_state.selected_example = ""
+        
+        # Usar el valor del ejemplo seleccionado si existe
+        default_value = st.session_state.selected_example if st.session_state.selected_example else ""
+        
+        pregunta = st.text_input("Haz tu pregunta aquí:", value=default_value, placeholder="Ejemplo: ¿Cuál fue la precipitación total en Valencia en 2022?")
 
         if st.button("Hacer Pregunta", type="primary", use_container_width=True):
             if pregunta:
+                # Limpiar el ejemplo seleccionado después de usar la pregunta
+                st.session_state.selected_example = ""
                 with st.spinner("🧠 El asistente está buscando la respuesta..."):
                     try:
                         payload = {"pregunta": pregunta}
@@ -2086,7 +2095,9 @@ def main():
         ]
         
         for i, ejemplo in enumerate(ejemplos, 1):
-            st.button(f"📝 {ejemplo}", key=f"ejemplo_{i}", use_container_width=True)
+            if st.button(f"📝 {ejemplo}", key=f"ejemplo_{i}", use_container_width=True):
+                st.session_state.selected_example = ejemplo
+                st.rerun()
         
         st.markdown("---")
         
