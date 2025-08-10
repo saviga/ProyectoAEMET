@@ -499,8 +499,7 @@ def load_weather_data():
                    tmed, prec, tmin, horatmin, tmax, horatmax,
                    hrmax, horahrmax, hrmin, horahrmin, hrmedia
             FROM datos_clima 
-            ORDER BY fecha DESC
-            LIMIT 500000;
+            ORDER BY fecha DESC;
             """
             
             st.info("📡 Descargando datos desde AWS RDS PostgreSQL...")
@@ -1491,3 +1490,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
