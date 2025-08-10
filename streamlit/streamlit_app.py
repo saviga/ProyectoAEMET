@@ -30,7 +30,8 @@ DB_CONFIG = {
 }
 
 # ===== CONFIGURACIÓN DE API IA =====
-API_URL = os.getenv('API_URL', "http://localhost:8000")
+import streamlit as st
+API_URL = st.secrets["API_URL"]
 
 # ===== CONFIGURACIÓN PROFESIONAL =====
 st.set_page_config(
@@ -2087,15 +2088,15 @@ def main():
         st.markdown("### 💡 Ejemplos de Consultas")
         
         ejemplos = [
-            "¿Cuál fue la temperatura máxima en Barcelona en julio de 2023?",
-            "¿Qué mes tuvo más precipitación en Madrid en 2022?",
+            "¿Cuál fue la temperatura media anual en 2024?",
+            "¿Cuál es la diferencia de temperatura entre marzo y agosto en Valencia en 2023?",
             "¿Cuál es la diferencia de temperatura entre enero y julio en Sevilla?",
             "¿Cuántos días llovió en Valencia en el último mes?",
             "¿Cuál fue la temperatura media en Andalucía en verano?"
         ]
         
         for i, ejemplo in enumerate(ejemplos, 1):
-            if st.button(f"📝 {ejemplo}", key=f"ejemplo_{i}", use_container_width=True):
+            if st.button(f"🗨️ {ejemplo}", key=f"ejemplo_{i}", use_container_width=True):
                 st.session_state.selected_example = ejemplo
                 st.rerun()
         
