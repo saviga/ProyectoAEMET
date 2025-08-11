@@ -1056,25 +1056,26 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=13),
             title=dict(
-                text=f'<b>Evolución Térmica - {station_clean}</b>',
-                font=dict(size=18, color='white'),
-                x=0.5
+                text=f'<b>Evolución Térmica</b><br><span style="font-size:12px;color:#aaaaaa;">{station_clean}</span>',
+                font=dict(size=16, color='white'),
+                x=0.5,
+                y=0.95
             ),
-            height=450,
+            height=500,
             hovermode='x unified',
             showlegend=True,
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
-                y=1.15,
+                y=1.02,
                 xanchor="center",
                 x=0.5,
-                font=dict(color='white', size=10),
+                font=dict(color='white', size=9),
                 bgcolor='rgba(0,0,0,0.3)',
                 bordercolor='rgba(255,255,255,0.2)',
                 borderwidth=1
             ),
-            margin=dict(l=60, r=60, t=120, b=60)
+            margin=dict(l=60, r=60, t=100, b=60)
         )
         
         fig_temp.update_xaxes(
@@ -1270,10 +1271,12 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
         if len(recent_data) > 7:
             st.markdown("### 🔬 **Análisis de Patrones Meteorológicos**")
             
+            # Layout responsivo: stacked en móvil, side-by-side en desktop
             fig_patterns = make_subplots(
-                rows=1, cols=2,
+                rows=2, cols=1,
                 subplot_titles=('📈 Variabilidad Diaria', '🌀 Correlación T°-Precipitación'),
-                horizontal_spacing=0.1
+                vertical_spacing=0.25,
+                row_heights=[0.5, 0.5]
             )
             
             if 'tmed' in recent_data.columns:
@@ -1307,16 +1310,16 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                 line=dict(width=1, color='white')
                             ),
                             hovertemplate='T°: <b>%{x:.1f}°C</b><br>Precipitación: <b>%{y:.1f}mm</b><extra></extra>'
-                        ), row=1, col=2
+                        ), row=2, col=1
                     )
             
             fig_patterns.update_layout(
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=11),
-                height=400,
+                height=650,
                 showlegend=False,
-                margin=dict(l=50, r=50, t=100, b=60)
+                margin=dict(l=50, r=50, t=80, b=70)
             )
             
             fig_patterns.update_xaxes(
@@ -1328,7 +1331,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
             )
             fig_patterns.update_xaxes(
                 title=dict(text="🌡️ Temperatura (°C)", font=dict(color='white')),
-                row=1, col=2,
+                row=2, col=1,
                 tickfont=dict(color='white'),
                 gridcolor='rgba(102,126,234,0.15)',
                 showgrid=True
@@ -1342,7 +1345,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
             )
             fig_patterns.update_yaxes(
                 title=dict(text="🌧️ Precipitación (mm)", font=dict(color='white')),
-                row=1, col=2,
+                row=2, col=1,
                 tickfont=dict(color='white'),
                 gridcolor='rgba(102,126,234,0.15)',
                 showgrid=True
@@ -1936,8 +1939,6 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 except Exception as model_error:
                     st.error(f"Error en el sistema de predicción: {str(model_error)}")
                     st.info("Verifica que todos los archivos del modelo estén presentes y sean compatibles")
-                    if validacion_avanzada:
-                        st.exception(model_error)
         
     except Exception as e:
         st.error(f"Error creando visualizaciones: {str(e)}")
