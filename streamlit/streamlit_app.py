@@ -1516,7 +1516,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
         with pred_col1:
             dias_prediccion = st.selectbox(
                 "📅 Días a predecir:",
-                [1, 3, 7, 14, 30],
+                [1, 3, 7,],
                 index=2,
                 help="Número de días futuros a predecir"
             )
