@@ -2089,8 +2089,8 @@ def main():
         
         ejemplos = [
             "¿Cuál fue la temperatura media anual en 2024?",
-            "¿Cuál es la diferencia de temperatura entre marzo y agosto en Valencia en 2023?",
-            "¿Cuál es la diferencia de temperatura entre enero y julio en Sevilla?",
+            "¿Cuál es fue el día mas con mayor temperatura en Valencia en 2023?",
+            "¿En que estación hay menor temperatura en Sevilla?",
             "¿Cuántos días llovió en Valencia en el último mes?",
             "¿Cuál fue la temperatura media en Malaga en verano?"
         ]
@@ -2140,6 +2140,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
