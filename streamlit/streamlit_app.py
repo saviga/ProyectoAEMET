@@ -482,6 +482,112 @@ def load_dark_theme():
         border: 1px solid rgba(102,126,234,0.6) !important;
         color: white !important;
     }
+    
+    /* Responsive Design - Mobile Optimization */
+    @media screen and (max-width: 768px) {
+        /* Header responsive */
+        .ultra-header {
+            padding: 2rem 1rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        .ultra-header h1 {
+            font-size: 2.5rem !important;
+        }
+        
+        .ultra-header p {
+            font-size: 1rem !important;
+        }
+        
+        /* Cards responsive */
+        .ultra-metric-card {
+            padding: 1.5rem 1rem !important;
+            margin: 0.5rem 0 !important;
+        }
+        
+        .ultra-metric-card h2 {
+            font-size: 2rem !important;
+        }
+        
+        .ultra-metric-card h3 {
+            font-size: 0.85rem !important;
+        }
+        
+        /* Buttons responsive */
+        .stButton > button {
+            padding: 0.8rem 1.5rem !important;
+            font-size: 1rem !important;
+        }
+        
+        /* Sidebar responsive */
+        .stSidebar {
+            width: 100% !important;
+        }
+        
+        /* Main content responsive */
+        .main .block-container {
+            padding-top: 1rem !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        /* Text inputs responsive */
+        .stTextInput input,
+        div[data-testid="stTextInput"] input {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+        
+        /* Selectbox responsive */
+        .stSelectbox > div > div {
+            font-size: 14px !important;
+        }
+        
+        /* Metrics responsive */
+        [data-testid="metric-container"] {
+            padding: 1rem !important;
+        }
+        
+        /* Charts responsive */
+        .js-plotly-plot {
+            width: 100% !important;
+        }
+        
+        /* Dataframe responsive */
+        .stDataFrame {
+            font-size: 12px !important;
+        }
+        
+        /* Columns responsive - Stack on mobile */
+        .element-container .row-widget {
+            flex-direction: column !important;
+        }
+        
+        .element-container .row-widget > div {
+            width: 100% !important;
+            margin-bottom: 1rem !important;
+        }
+    }
+    
+    @media screen and (max-width: 480px) {
+        /* Extra small devices */
+        .ultra-header h1 {
+            font-size: 2rem !important;
+        }
+        
+        .ultra-metric-card h2 {
+            font-size: 1.8rem !important;
+        }
+        
+        .stButton > button {
+            padding: 0.7rem 1rem !important;
+            font-size: 0.9rem !important;
+        }
+        
+        .main .block-container {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -2089,10 +2195,10 @@ def main():
         
         ejemplos = [
             "¿Cuál fue la temperatura media anual en 2024?",
-            "¿Cuál es fue el día mas con mayor temperatura en Valencia en 2023?",
-            "¿Cuál fue el día más frio en Madrid en el año 2024?",
+            "¿Cuál es la diferencia de temperatura entre marzo y agosto en Valencia en 2023?",
+            "¿Cuál es la diferencia de temperatura entre enero y julio en Sevilla?",
             "¿Cuántos días llovió en Valencia en el último mes?",
-            "¿Cuál fue la temperatura media en Malaga en verano?"
+            "¿Cuál fue la temperatura media en Andalucía en verano?"
         ]
         
         for i, ejemplo in enumerate(ejemplos, 1):
