@@ -1059,7 +1059,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 text=f'<b>Evolución Térmica</b><br><span style="font-size:12px;color:#aaaaaa;">{station_clean}</span>',
                 font=dict(size=16, color='white'),
                 x=0.5,
-                y=0.95
+                y=0.92
             ),
             height=500,
             hovermode='x unified',
@@ -1067,7 +1067,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
-                y=1.02,
+                y=1.08,
                 xanchor="center",
                 x=0.5,
                 font=dict(color='white', size=9),
@@ -1075,7 +1075,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 bordercolor='rgba(255,255,255,0.2)',
                 borderwidth=1
             ),
-            margin=dict(l=60, r=60, t=100, b=60)
+            margin=dict(l=60, r=60, t=120, b=60)
         )
         
         fig_temp.update_xaxes(
@@ -1145,7 +1145,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 st.plotly_chart(fig_prec, use_container_width=True, config={'displayModeBar': False})
             
             with col2:
-                st.markdown("### 📊 **Distribución Estadística**")
+                st.markdown("### 📊 **Distribución Térmica**")
                 
                 # Crear histograma dentro de la columna
                 fig_hist = go.Figure()
@@ -1181,7 +1181,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                     paper_bgcolor='rgba(0,0,0,0)',
                     font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=13),
                     title=dict(
-                        text='<b>Distribución de Temperaturas</b>',
+                        text='<b>Distribución Térmica</b>',
                         font=dict(size=16, color='white'),
                         x=0.5
                     ),
@@ -1207,7 +1207,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 
         else:
             # Solo mostrar distribución estadística en una columna más ancha
-            st.markdown("### 📊 **Distribución Estadística**")
+            st.markdown("### 📊 **Distribución Térmica**")
             
             # Crear histograma fuera de columnas (ocupando todo el ancho)
             fig_hist = go.Figure()
@@ -1243,7 +1243,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 paper_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=13),
                 title=dict(
-                    text='<b>Distribución de Temperaturas</b>',
+                    text='<b>Distribución Térmica</b>',
                     font=dict(size=16, color='white'),
                     x=0.5
                 ),
