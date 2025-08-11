@@ -1056,10 +1056,10 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=13),
             title=dict(
-                text=f'<b>Evolución Térmica - {station_clean}</b><br><br><br><br><br><br><br><br><br><br>',
+                text=f'<b>Evolución Térmica - {station_clean}</b><br><br><br><br><br><br><br><br><br><br><br><br><br>',
                 font=dict(size=16, color='white'),
-                x=0.3,
-                y=0.85
+                x=0.1,
+                y=0.90
             ),
             height=500,
             hovermode='x unified',
@@ -1875,7 +1875,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                 
                                 fig_pred.update_layout(
                                     title=dict(
-                                        text=f"🔮 Predicción ML - Temperatura Media ({station_clean})",
+                                        text=f"🔮Temperatura Media ({station_clean})",
                                         font=dict(color='white', size=18),
                                         x=0.0,
                                         xanchor='left'
@@ -1897,9 +1897,9 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                     legend=dict(
                                         orientation="h",
                                         yanchor="top",
-                                        y=0.98,
+                                        y=1.0,
                                         xanchor="right",
-                                        x=1.0,
+                                        x=0.3,
                                         bgcolor='rgba(0,0,0,0.3)',
                                         bordercolor='rgba(255,255,255,0.2)',
                                         borderwidth=1,
