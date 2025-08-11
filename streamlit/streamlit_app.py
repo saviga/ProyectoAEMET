@@ -615,7 +615,7 @@ def load_weather_data():
             df = pd.read_sql_query(query, engine)
             
             if df.empty:
-                st.error("❌ No se encontraron datos en la base de datos")
+                st.error("No se encontraron datos en la base de datos")
                 return None
             
             # Procesar fechas
@@ -646,8 +646,8 @@ def load_weather_data():
             return df
             
     except Exception as e:
-        st.error(f"❌ Error conectando con AWS RDS: {str(e)}")
-        st.info("🔄 Intentando con datos locales como respaldo...")
+        st.error(f"Error conectando con AWS RDS: {str(e)}")
+        st.info("Intentando con datos locales como respaldo...")
         # Fallback a CSV local si falla la conexión
         try:
             df = pd.read_csv('df_total.csv')
@@ -658,7 +658,7 @@ def load_weather_data():
                     df = df.dropna(subset=['fecha'])
                     df = df.sort_values('fecha')
                 
-                st.warning(f"⚠️ Usando datos locales: {len(df):,} registros")
+                st.warning(f"Usando datos locales: {len(df):,} registros")
                 return df
         except:
             pass
@@ -926,14 +926,14 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
         df_chart, station_clean = filter_by_station(df, station)
         
         if df_chart.empty:
-            st.warning("⚠️ No hay datos disponibles para esta estación")
+            st.warning("No hay datos disponibles para esta estación")
             return
         
         # Datos recientes
         recent_data = df_chart.tail(days * 3).copy()  # Más datos para mejor análisis
         
         if 'fecha' not in recent_data.columns:
-            st.warning("⚠️ Datos de fecha no disponibles")
+            st.warning("Datos de fecha no disponibles")
             return
         
         # Procesar fechas
@@ -1060,18 +1060,21 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 font=dict(size=18, color='white'),
                 x=0.5
             ),
-            height=400,
+            height=450,
             hovermode='x unified',
             showlegend=True,
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1,
-                font=dict(color='white')
+                y=1.15,
+                xanchor="center",
+                x=0.5,
+                font=dict(color='white', size=10),
+                bgcolor='rgba(0,0,0,0.3)',
+                bordercolor='rgba(255,255,255,0.2)',
+                borderwidth=1
             ),
-            margin=dict(l=60, r=60, t=80, b=60)
+            margin=dict(l=60, r=60, t=120, b=60)
         )
         
         fig_temp.update_xaxes(
@@ -1166,11 +1169,11 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                     q75 = recent_data['tmed'].quantile(0.75)
                     
                     fig_hist.add_vline(x=q25, line_dash="dash", line_color="#43e97b", 
-                                     annotation_text=f"Q1: {q25:.1f}°C", annotation_position="top")
+                                     annotation_text=f"Q1", annotation_position="top left")
                     fig_hist.add_vline(x=q50, line_dash="solid", line_color="#f093fb", line_width=2,
-                                     annotation_text=f"Mediana: {q50:.1f}°C", annotation_position="top")
+                                     annotation_text=f"Med", annotation_position="top")
                     fig_hist.add_vline(x=q75, line_dash="dash", line_color="#fa709a",
-                                     annotation_text=f"Q3: {q75:.1f}°C", annotation_position="top")
+                                     annotation_text=f"Q3", annotation_position="top right")
                 
                 fig_hist.update_layout(
                     plot_bgcolor='rgba(0,0,0,0)',
@@ -1310,10 +1313,10 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
             fig_patterns.update_layout(
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=13),
-                height=350,
+                font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=11),
+                height=400,
                 showlegend=False,
-                margin=dict(l=50, r=50, t=80, b=50)
+                margin=dict(l=50, r=50, t=100, b=60)
             )
             
             fig_patterns.update_xaxes(
@@ -1575,9 +1578,9 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                         if not scaler_x_path: missing.append("scaler_X_production.joblib")
                         if not scaler_y_path: missing.append("scaler_y_production.joblib")
                         
-                        st.error(f"❌ Archivos no encontrados: {', '.join(missing)}")
-                        st.info(f"📁 Directorio actual: {os.getcwd()}")
-                        st.info(f"📋 Archivos disponibles: {os.listdir('.')}")
+                        st.error(f"Archivos no encontrados: {', '.join(missing)}")
+                        st.info(f"Directorio actual: {os.getcwd()}")
+                        st.info(f"Archivos disponibles: {os.listdir('.')}")
                         return
                     
                    
@@ -1613,8 +1616,8 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                     station_data = recent_data.copy().sort_values('fecha').reset_index(drop=True)
                     
                     if len(station_data) < 30:
-                        st.error(f"❌ Datos insuficientes: Se necesitan al menos 30 días de historial. Disponibles: {len(station_data)} días")
-                        st.info("💡 Se requiere un mínimo de datos para generar predicciones fiables")
+                        st.error(f"Datos insuficientes: Se necesitan al menos 30 días de historial. Disponibles: {len(station_data)} días")
+                        st.info("Se requiere un mínimo de datos para generar predicciones fiables")
                     else:
                         # Manejo inteligente para secuencias menores a 90 días
                         required_sequence = 90
@@ -1633,8 +1636,8 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                             )
                             
                             if estrategia.startswith("🎯"):
-                                st.error("❌ Predicción cancelada por falta de datos suficientes")
-                                st.info("💡 Espera a tener más datos históricos o usa el padding inteligente")
+                                st.error("Predicción cancelada por falta de datos suficientes")
+                                st.info("Espera a tener más datos históricos o usa el padding inteligente")
                             else:
                                 proceed_with_prediction = True
                         else:
@@ -1650,7 +1653,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                             missing_basic = [f for f in required_basic if f not in available_basic]
                             
                             if missing_basic:
-                                st.error(f"❌ Features básicas faltantes: {missing_basic}")
+                                st.error(f"Features básicas faltantes: {missing_basic}")
                             else:
                                 # Limpieza de datos anómalos (rangos realistas España)
                                 station_data.loc[station_data['tmed'] < -20, 'tmed'] = np.nan
@@ -1693,7 +1696,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                 complete_data = station_data.dropna(subset=model_features)
                                 
                                 if len(complete_data) < 30:
-                                    st.error(f"❌ Datos completos insuficientes: {len(complete_data)} registros válidos")
+                                    st.error(f"Datos completos insuficientes: {len(complete_data)} registros válidos")
                                 else:
                                     
                                     # === 4. PREPARACIÓN INTELIGENTE DE SECUENCIA ===
@@ -1748,7 +1751,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                     # === 5. ESCALADO CORRECTO Y PREDICCIÓN ===
                                     # Verificar dimensiones finales
                                     if input_sequence.shape != (required_sequence, len(model_features)):
-                                        st.error(f"❌ Error en dimensiones: {input_sequence.shape} != ({required_sequence}, {len(model_features)})")
+                                        st.error(f"Error en dimensiones: {input_sequence.shape} != ({required_sequence}, {len(model_features)})")
                                     else:
                                         
                                         # ESCALADO CORRECTO: aplicar scaler fila por fila (día por día)
@@ -1931,14 +1934,14 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                     """)
                                 
                 except Exception as model_error:
-                    st.error(f"❌ Error en el sistema de predicción: {str(model_error)}")
-                    st.info("💡 Verifica que todos los archivos del modelo estén presentes y sean compatibles")
+                    st.error(f"Error en el sistema de predicción: {str(model_error)}")
+                    st.info("Verifica que todos los archivos del modelo estén presentes y sean compatibles")
                     if validacion_avanzada:
                         st.exception(model_error)
         
     except Exception as e:
-        st.error(f"❌ Error creando visualizaciones: {str(e)}")
-        st.info("💡 Verifica que los datos contienen las columnas necesarias (fecha, tmed, prec, etc.)")
+        st.error(f"Error creando visualizaciones: {str(e)}")
+        st.info("Verifica que los datos contienen las columnas necesarias (fecha, tmed, prec, etc.)")
 
 def render_advanced_data_table(df, station='Estación específica', limit=100):
     """Tabla de datos avanzada con métricas"""
@@ -1946,7 +1949,7 @@ def render_advanced_data_table(df, station='Estación específica', limit=100):
         df_table, station_clean = filter_by_station(df, station)
         
         if df_table.empty:
-            st.warning("⚠️ No hay datos para mostrar")
+            st.warning("No hay datos para mostrar")
             return
         
         # Preparar datos para la tabla
@@ -2012,7 +2015,7 @@ def render_advanced_data_table(df, station='Estación específica', limit=100):
         )
         
     except Exception as e:
-        st.error(f"❌ Error preparando tabla: {str(e)}")
+        st.error(f"Error preparando tabla: {str(e)}")
 
 # ===== APLICACIÓN PRINCIPAL =====
 def main():
@@ -2103,8 +2106,8 @@ def main():
         
         # Estado del sistema
         st.markdown("### 📊 Estado del Sistema")
-        st.success("✅ Sistema operativo")
-        st.info(f"🔄 Sincronizado: {datetime.now().strftime('%H:%M:%S')}")
+        st.success("Sistema operativo")
+        st.info(f"Sincronizado: {datetime.now().strftime('%H:%M:%S')}")
         
         # Información de datos
         df_filtered, station_clean = filter_by_station(df, selected_station)
@@ -2180,13 +2183,13 @@ def main():
                             error_detail = response.json().get('detail', 'Error desconocido.')
                             st.error(f"Error de la API ({response.status_code}): {error_detail}")
                     except requests.exceptions.ConnectionError:
-                        st.error("❌ No se pudo conectar con el servidor de IA. Verifica que la API esté ejecutándose en http://16.171.198.191:8000")
+                        st.error("No se pudo conectar con el servidor de IA. Verifica que la API esté ejecutándose en http://16.171.198.191:8000")
                     except requests.exceptions.Timeout:
-                        st.error("⏱️ La consulta tardó demasiado tiempo. Intenta con una pregunta más específica.")
+                        st.error("La consulta tardó demasiado tiempo. Intenta con una pregunta más específica.")
                     except Exception as e:
-                        st.error(f"❌ Ha ocurrido un error al conectar con la API: {e}")
+                        st.error(f"Ha ocurrido un error al conectar con la API: {e}")
             else:
-                st.warning("⚠️ Por favor, introduce una pregunta.")
+                st.warning("Por favor, introduce una pregunta.")
         
         st.markdown("---")
         
