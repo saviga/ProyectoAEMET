@@ -2092,7 +2092,7 @@ def main():
             "¿Cuál es la diferencia de temperatura entre marzo y agosto en Valencia en 2023?",
             "¿Cuál es la diferencia de temperatura entre enero y julio en Sevilla?",
             "¿Cuántos días llovió en Valencia en el último mes?",
-            "¿Cuál fue la temperatura media en Andalucía en verano?"
+            "¿Cuál fue la temperatura media en Malaga en verano?"
         ]
         
         for i, ejemplo in enumerate(ejemplos, 1):
@@ -2140,6 +2140,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
