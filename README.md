@@ -39,11 +39,14 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 	cd <nombre_de_tu_repositorio>
 
 2. Otorgar permisos a tu clave .pem para permitir la conexion ssh a EC2
+   
    chmod 400 /ruta_a_su_clave_pem/nombre_clave.pem
    
 3. Conexion SSH a su instancia EC2
+   
    ssh -v -i '/ruta_a_su_clave_pem/nombre_clave.pem' ec2-user@<ip_publica_ec2>
    <recomiendo establecer su ip elástica para que su ip no sea volatil>
+   
    <ec2-user cambia según la AMI (Amazon Machine Image) que uses para lanzar la instancia EC2>
 
 4. Configurar el Entorno Virtual   
@@ -77,7 +80,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
    		Nota: Para un entorno de producción, se recomienda usar un método más seguro para gestionar estas variables, como AWS Secrets Manager o un archivo .env cargado de forma segura.
 
-9. Iniciar la Aplicación
+8. Iniciar la Aplicación
 
 	Una vez que las variables de entorno están configuradas, puedes iniciar el servidor Uvicorn. Es importante usar el flag --workers 1 para la carga de modelos.
 	
