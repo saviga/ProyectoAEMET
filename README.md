@@ -63,18 +63,19 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 	pip install -r requirements.txt
 
 
-6. Creación directorio
+5. Creación directorio
    
-    mkdir /home/ec2-user/fastapi_app 
+    mkdir /home/ec2-user/fastapi_app
+   
 	cd /home/ec2-user/fastapi_app
 
-7. Descargar contenido desde S3
+6. Descargar contenido desde S3
    
     aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
    
     <Asegúrate de que tu instancia EC2 tenga los permisos necesarios para acceder a S3>
 
-8. Configurar las Variables de Entorno
+7. Configurar las Variables de Entorno
 	El proyecto usa variables de entorno para conectarse a la base de datos PostgreSQL. Debes definirlas en tu terminal antes de iniciar la aplicación.
 	Reemplaza los valores de ejemplo con tus credenciales reales:
 
@@ -87,7 +88,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
    		Nota: Para un entorno de producción, se recomienda usar un método más seguro para gestionar estas variables, como AWS Secrets Manager o un archivo .env cargado de forma segura.
 
-9. Iniciar la Aplicación
+8. Iniciar la Aplicación
 
 	Una vez que las variables de entorno están configuradas, puedes iniciar el servidor Uvicorn. Es importante usar el flag --workers 1 para la carga de modelos.
 	
