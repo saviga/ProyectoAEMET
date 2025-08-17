@@ -34,7 +34,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
 1. Clonar el Repositorio
    
-	git clone <URL_DE_TU_REPOSITORIO>
+	git clone <url_repositorio>
  
 	cd <nombre_de_tu_repositorio>
 
@@ -132,6 +132,10 @@ Una vez que la API está funcionando, puedes interactuar con ella a través de d
 Las contribuciones son bienvenidas. Si tienes ideas para mejorar, abre un *issue* o crea un *pull request*.
 
 ---
+
+## 📖 Documentación
+
+Puedes encontrar la documentación completa de la API en el siguiente enlace: [Documentación de la API](http://<host>:8000/docs)
 
 ## 📝 Licencia
 
