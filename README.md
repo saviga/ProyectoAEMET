@@ -6,7 +6,7 @@ La API se despliega en una instancia de AWS EC2 y utiliza PostgreSQL como base d
 
 🚀 Características Principales
 
-    Predicción de Temperatura: Utiliza un modelo de Encoder-Decoder entrenado con TensorFlow para generar pronósticos de temperatura a futuro.
+    Predicción de Temperatura: Utiliza un modelo  híbrido que combina una pila de capas LSTM bidireccionales con una pila de bloques Transformer entrenado con pytorch para generar pronósticos de temperatura a futuro.
 
     Asistente Inteligente: Integra un asistente conversacional (basado en Gemini) que puede responder a preguntas sobre los datos históricos disponibles en la base de datos.
 
@@ -38,18 +38,37 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
  
 	cd <nombre_de_tu_repositorio>
 
-2. Configurar el Entorno Virtual
+2. Otorgar permisos a tu clave .pem para permitir la conexion ssh a EC2
+   chmod 400 /ruta_a_su_clave_pem/nombre_clave.pem
    
+3. Conexion SSH a su instancia EC2
+   ssh -v -i '/ruta_a_su_clave_pem/nombre_clave.pem' ec2-user@<ip_publica_ec2>
+   <recomiendo establecer su ip elástica para que su ip no sea volatil>
+   <ec2-user cambia según la AMI (Amazon Machine Image) que uses para lanzar la instancia EC2>
+
+4. Configurar el Entorno Virtual   
+    sudo yum update -y 
+	sudo yum install -y python3 python3-pip git nginx awscli
+
 	python3 -m venv venv
-
 	source venv/bin/activate
-
+	<instalamos las dependencias que hemos especificado en nuestro requirements.txt>
 	pip install -r requirements.txt
 
-3. Configurar las Variables de Entorno
+
+5. Creación directorio
+    mkdir /home/ec2-user/fastapi_app # Usamos ec2-user como usuario
+	cd /home/ec2-user/fastapi_app
+
+6. Descargar contenido desde S3
+    aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
+    <Asegúrate de que tu instancia EC2 tenga los permisos necesarios para acceder a S3>
+
+7. Configurar las Variables de Entorno
 	El proyecto usa variables de entorno para conectarse a la base de datos PostgreSQL. Debes definirlas en tu terminal antes de iniciar la aplicación.
 	Reemplaza los valores de ejemplo con tus credenciales reales:
 
+		export GOOGLE_API_KEY=<api_key>
 		export PG_HOST="<tu_host_de_postgresql>"
 		export PG_PORT="5432" # o el puerto que uses
 		export PG_USER="<tu_usuario_de_postgresql>"
@@ -58,7 +77,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
    		Nota: Para un entorno de producción, se recomienda usar un método más seguro para gestionar estas variables, como AWS Secrets Manager o un archivo .env cargado de forma segura.
 
-4. Iniciar la Aplicación
+9. Iniciar la Aplicación
 
 	Una vez que las variables de entorno están configuradas, puedes iniciar el servidor Uvicorn. Es importante usar el flag --workers 1 para la carga de modelos.
 	
