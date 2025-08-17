@@ -50,7 +50,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
    
    <ec2-user cambia según la AMI (Amazon Machine Image) que uses para lanzar la instancia EC2>
 
-4. Configurar el Entorno Virtual
+4. Configurar el Entorno Virtual y dependencias
    
     sudo yum update -y 
 	sudo yum install -y python3 python3-pip git nginx awscli
