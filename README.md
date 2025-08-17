@@ -134,8 +134,10 @@ Las contribuciones son bienvenidas. Si tienes ideas para mejorar, abre un *issue
 ---
 
 ## 📖 Documentación
+	Puedes acceder a la documentación interactiva de la API en tu navegador visitando la siguiente dirección:
+	<http://localhost:8000/docs>
 
-Puedes encontrar la documentación completa de la API en el siguiente enlace: [Documentación de la API](http://<host>:8000/docs)
+	Esto te llevará directamente a la interfaz de Swagger UI, donde podrás explorar y probar todos los endpoints de tu API.
 
 ## 📝 Licencia
 
