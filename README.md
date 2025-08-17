@@ -45,11 +45,13 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 3. Conexion SSH a su instancia EC2
    
    ssh -v -i '/ruta_a_su_clave_pem/nombre_clave.pem' ec2-user@<ip_publica_ec2>
+   
    <recomiendo establecer su ip elástica para que su ip no sea volatil>
    
    <ec2-user cambia según la AMI (Amazon Machine Image) que uses para lanzar la instancia EC2>
 
-4. Configurar el Entorno Virtual   
+4. Configurar el Entorno Virtual
+   
     sudo yum update -y 
 	sudo yum install -y python3 python3-pip git nginx awscli
 
@@ -60,10 +62,12 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
 
 5. Creación directorio
+   
     mkdir /home/ec2-user/fastapi_app # Usamos ec2-user como usuario
 	cd /home/ec2-user/fastapi_app
 
 6. Descargar contenido desde S3
+   
     aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
     <Asegúrate de que tu instancia EC2 tenga los permisos necesarios para acceder a S3>
 
