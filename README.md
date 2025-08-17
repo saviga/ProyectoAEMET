@@ -52,21 +52,23 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
 4. Configurar el Entorno Virtual y dependencias
    
-    sudo yum update -y 
+    sudo yum update -y
+   
 	sudo yum install -y python3 python3-pip git nginx awscli
 
 	python3 -m venv venv
 	source venv/bin/activate
+
 	<instalamos las dependencias que hemos especificado en nuestro requirements.txt>
 	pip install -r requirements.txt
 
 
-5. Creación directorio
+6. Creación directorio
    
     mkdir /home/ec2-user/fastapi_app 
 	cd /home/ec2-user/fastapi_app
 
-6. Descargar contenido desde S3
+7. Descargar contenido desde S3
    
     aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
    
