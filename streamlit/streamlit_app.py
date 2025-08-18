@@ -846,7 +846,7 @@ def render_ultra_header():
     st.markdown("""
     <div class="ultra-header">
         <h1>🌤️ AEMET Analytics Professional</h1>
-        <p>Sistema Avanzado de Inteligencia Meteorológica • Powered by Deep Learning</p>
+        <p>Sistema Avanzado de Inteligencia Meteorológica • Powered LSTM & Transformers</p>
     </div>
     """, unsafe_allow_html=True)
 
