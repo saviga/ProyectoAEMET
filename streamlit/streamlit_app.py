@@ -1355,7 +1355,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
         
         # === SISTEMA DE PREDICCIÓN ML PROFESIONAL ===
         st.markdown("---")
-        st.markdown("### 🔮 **Predicción de Temperatura Media - Sistema ML Avanzado**")
+        st.markdown("### 🔮 **Predicción de Temperatura Media**")
         
         # === IMPLEMENTACIÓN EXACTA DE LA ARQUITECTURA REAL ===
         class AdvancedPositionalEncoding(nn.Module):
