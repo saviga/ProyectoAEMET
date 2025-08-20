@@ -131,26 +131,26 @@ The project uses environment variables to connect to the PostgreSQL database. Yo
 
 Replace the example values with your actual credentials:
 
-export GOOGLE_API_KEY=<api_key>
-
-export PG_HOST="<your_postgresql_host>"
-
-export PG_PORT="5432" # or the port you use
-
-export PG_USER="<your_postgresql_user>"
-
-export PG_PASSWORD="<your_postgresql_password>"
-
-export PG_DATABASE="<your_postgresql_database>"
+        export GOOGLE_API_KEY=<api_key>
+        
+        export PG_HOST="<your_postgresql_host>"
+        
+        export PG_PORT="5432" # or the port you use
+        
+        export PG_USER="<your_postgresql_user>"
+        
+        export PG_PASSWORD="<your_postgresql_password>"
+        
+        export PG_DATABASE="<your_postgresql_database>"
 
 
 **8. Start the Application**
 
 Once the environment variables are configured, you can start the Uvicorn server. It is important to use the --workers 1 flag for model loading.
 
-uvicorn Main_production:app --host 0.0.0.0 --port 8000 --workers 1
+    uvicorn Main_production:app --host 0.0.0.0 --port 8000 --workers 1
 
-    #If everything is configured correctly, you will see in the console that the models are loaded from S3 and that the application starts without errors.
+        #If everything is configured correctly, you will see in the console that the models are loaded from S3 and that the application starts without errors.
 
 **🧪 API Usage**
 
