@@ -6,29 +6,29 @@ The API is deployed on an AWS EC2 instance and uses PostgreSQL as the database t
 
 **🚀 Key Features**
 
-    Temperature Prediction: Uses a hybrid model that combines a stack of bidirectional LSTM layers with a stack of Transformer blocks, trained with PyTorch, to generate future temperature forecasts.
+    -Temperature Prediction: Uses a hybrid model that combines a stack of bidirectional LSTM layers with a stack of Transformer blocks, trained with PyTorch, to generate future temperature forecasts.
 
-    Smart Assistant: Integrates a conversational assistant (based on Gemini) that can answer questions about the historical data available in the database.
+    -Smart Assistant: Integrates a conversational assistant (based on Gemini) that can answer questions about the historical data available in the database.
 
-    Robust Architecture: The ML models are loaded at application startup from AWS S3, ensuring the service is always ready to respond without delays.
+    -Robust Architecture: The ML models are loaded at application startup from AWS S3, ensuring the service is always ready to respond without delays.
 
-    RESTful API: Offers clear RESTful endpoints for forecast prediction and for interacting with the assistant.
+    -RESTful API: Offers clear RESTful endpoints for forecast prediction and for interacting with the assistant.
 
 **🛠️Prerequisites**
 
 To run this project, you need to have the following components installed:
 
-    Python 3.9+
+    -Python 3.9+
 
-    PostgreSQL (with a database configured and historical data)
+    -PostgreSQL (with a database configured and historical data)
 
-    EC2 (with a .pem key for SSH connection, and a security group with inbound and outbound traffic permissions configured for the ports to be used)
+    -EC2 (with a .pem key for SSH connection, and a security group with inbound and outbound traffic permissions configured for the ports to be used)
 
-    RDS (configured for necessary traffic)
+    -RDS (configured for necessary traffic)
 
-    AWS Access (with credentials configured for S3)
+    -AWS Access (with credentials configured for S3)
 
-    Create Lambdas with the LambdaS3 (to extract data from the API and save it to S3) and LambdaBD (to save the extracted data to RDS) files.
+    -Create Lambdas with the LambdaS3 (to extract data from the API and save it to S3) and LambdaBD (to save the extracted data to RDS) files.
 
         <remember to set the environment variables in the lambda configuration and the necessary layers for the libraries>
   	
@@ -134,6 +134,7 @@ export PG_PORT="5432" # or the port you use
 export PG_USER="<your_postgresql_user>"
 export PG_PASSWORD="<your_postgresql_password>"
 export PG_DATABASE="<your_postgresql_database>"
+
 
 **8. Start the Application**
 
