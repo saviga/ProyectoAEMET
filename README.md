@@ -35,20 +35,20 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
 
 1. Clonar el Repositorio
-   <
+   
 	git clone <url_repositorio>
  
-	cd <nombre_de_tu_repositorio>>
+	cd <nombre_de_tu_repositorio>
 
 2. Otorgar permisos a tu clave .pem para permitir la conexion ssh a EC2
    
-   <chmod 400 /ruta_a_su_clave_pem/nombre_clave.pem>
+   chmod 400 /ruta_a_su_clave_pem/nombre_clave.pem
    
 3. Conexion SSH a su instancia EC2
    
-   <ssh -v -i '/ruta_a_su_clave_pem/nombre_clave.pem' ec2-user@<ip_publica_ec2>
+   ssh -v -i '/ruta_a_su_clave_pem/nombre_clave.pem' ec2-user@<ip_publica_ec2>
    
-   <recomiendo establecer su ip elástica para que su ip no sea volatil>>
+   <recomiendo establecer su ip elástica para que su ip no sea volatil>
    
    <ec2-user cambia según la AMI (Amazon Machine Image) que uses para lanzar la instancia EC2>
 
