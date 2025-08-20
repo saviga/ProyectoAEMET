@@ -16,6 +16,7 @@ import os
 from dotenv import load_dotenv
 warnings.filterwarnings('ignore')
 
+
 # Cargar variables de entorno
 load_dotenv()
 
@@ -29,7 +30,8 @@ DB_CONFIG = {
 }
 
 # ===== CONFIGURACIÓN DE API IA =====
-API_URL = os.getenv('API_URL', "http://localhost:8000")
+import streamlit as st
+API_URL = st.secrets["API_URL"]
 
 # ===== CONFIGURACIÓN PROFESIONAL =====
 st.set_page_config(
@@ -480,6 +482,112 @@ def load_dark_theme():
         border: 1px solid rgba(102,126,234,0.6) !important;
         color: white !important;
     }
+    
+    /* Responsive Design - Mobile Optimization */
+    @media screen and (max-width: 768px) {
+        /* Header responsive */
+        .ultra-header {
+            padding: 2rem 1rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        .ultra-header h1 {
+            font-size: 2.5rem !important;
+        }
+        
+        .ultra-header p {
+            font-size: 1rem !important;
+        }
+        
+        /* Cards responsive */
+        .ultra-metric-card {
+            padding: 1.5rem 1rem !important;
+            margin: 0.5rem 0 !important;
+        }
+        
+        .ultra-metric-card h2 {
+            font-size: 2rem !important;
+        }
+        
+        .ultra-metric-card h3 {
+            font-size: 0.85rem !important;
+        }
+        
+        /* Buttons responsive */
+        .stButton > button {
+            padding: 0.8rem 1.5rem !important;
+            font-size: 1rem !important;
+        }
+        
+        /* Sidebar responsive */
+        .stSidebar {
+            width: 100% !important;
+        }
+        
+        /* Main content responsive */
+        .main .block-container {
+            padding-top: 1rem !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        /* Text inputs responsive */
+        .stTextInput input,
+        div[data-testid="stTextInput"] input {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+        
+        /* Selectbox responsive */
+        .stSelectbox > div > div {
+            font-size: 14px !important;
+        }
+        
+        /* Metrics responsive */
+        [data-testid="metric-container"] {
+            padding: 1rem !important;
+        }
+        
+        /* Charts responsive */
+        .js-plotly-plot {
+            width: 100% !important;
+        }
+        
+        /* Dataframe responsive */
+        .stDataFrame {
+            font-size: 12px !important;
+        }
+        
+        /* Columns responsive - Stack on mobile */
+        .element-container .row-widget {
+            flex-direction: column !important;
+        }
+        
+        .element-container .row-widget > div {
+            width: 100% !important;
+            margin-bottom: 1rem !important;
+        }
+    }
+    
+    @media screen and (max-width: 480px) {
+        /* Extra small devices */
+        .ultra-header h1 {
+            font-size: 2rem !important;
+        }
+        
+        .ultra-metric-card h2 {
+            font-size: 1.8rem !important;
+        }
+        
+        .stButton > button {
+            padding: 0.7rem 1rem !important;
+            font-size: 0.9rem !important;
+        }
+        
+        .main .block-container {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -503,11 +611,11 @@ def load_weather_data():
             LIMIT 500000;
             """
             
-            st.info("📡 Descargando datos desde AWS RDS PostgreSQL...")
+           
             df = pd.read_sql_query(query, engine)
             
             if df.empty:
-                st.error("❌ No se encontraron datos en la base de datos")
+                st.error("No se encontraron datos en la base de datos")
                 return None
             
             # Procesar fechas
@@ -534,14 +642,12 @@ def load_weather_data():
             stations_count = df['indicativo'].nunique() if 'indicativo' in df.columns else 0
             date_range = f"{df['fecha'].min().strftime('%Y-%m-%d')} a {df['fecha'].max().strftime('%Y-%m-%d')}" if 'fecha' in df.columns else "N/A"
             
-            st.success(f"✅ Conectado a AWS RDS: {len(df):,} registros | {stations_count} estaciones | Período: {date_range}")
             engine.dispose()  # Cerrar conexión
             return df
             
     except Exception as e:
-        st.error(f"❌ Error conectando con AWS RDS: {str(e)}")
-        st.info("🔄 Intentando con datos locales como respaldo...")
-        
+        st.error(f"Error conectando con AWS RDS: {str(e)}")
+        st.info("Intentando con datos locales como respaldo...")
         # Fallback a CSV local si falla la conexión
         try:
             df = pd.read_csv('df_total.csv')
@@ -552,7 +658,7 @@ def load_weather_data():
                     df = df.dropna(subset=['fecha'])
                     df = df.sort_values('fecha')
                 
-                st.warning(f"⚠️ Usando datos locales: {len(df):,} registros")
+                st.warning(f"Usando datos locales: {len(df):,} registros")
                 return df
         except:
             pass
@@ -740,7 +846,7 @@ def render_ultra_header():
     st.markdown("""
     <div class="ultra-header">
         <h1>🌤️ AEMET Analytics Professional</h1>
-        <p>Sistema Avanzado de Inteligencia Meteorológica • Powered by Deep Learning</p>
+        <p>Sistema Avanzado de Inteligencia Meteorológica • Powered by LSTM & Transformers</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -814,20 +920,20 @@ def render_ultra_metrics(df):
         </div>
         """, unsafe_allow_html=True)
 
-def create_ultra_charts(df, station='Estación específica', days=90):
+def create_ultra_charts(df, station='Estación específica', days=90, show_trends=True, show_confidence=True, show_precipitation=True):
     """Crear visualizaciones ultra profesionales y bonitas"""
     try:
         df_chart, station_clean = filter_by_station(df, station)
         
         if df_chart.empty:
-            st.warning("⚠️ No hay datos disponibles para esta estación")
+            st.warning("No hay datos disponibles para esta estación")
             return
         
         # Datos recientes
         recent_data = df_chart.tail(days * 3).copy()  # Más datos para mejor análisis
         
         if 'fecha' not in recent_data.columns:
-            st.warning("⚠️ Datos de fecha no disponibles")
+            st.warning("Datos de fecha no disponibles")
             return
         
         # Procesar fechas
@@ -888,14 +994,15 @@ def create_ultra_charts(df, station='Estación específica', days=90):
             ))
             
             # Media móvil 7 días (tendencia suave)
-            fig_temp.add_trace(go.Scatter(
-                x=recent_data['fecha'],
-                y=ma_7,
-                mode='lines',
-                name='📊 Tendencia 7 días',
-                line=dict(color='#f093fb', width=3, smoothing=1.3),
-                hovertemplate='<b>%{x|%d/%m/%Y}</b><br>Media 7d: <b>%{y:.1f}°C</b><extra></extra>'
-            ))
+            if show_trends:
+                fig_temp.add_trace(go.Scatter(
+                    x=recent_data['fecha'],
+                    y=ma_7,
+                    mode='lines',
+                    name='📊 Tendencia 7 días',
+                    line=dict(color='#f093fb', width=3, smoothing=1.3),
+                    hovertemplate='<b>%{x|%d/%m/%Y}</b><br>Media 7d: <b>%{y:.1f}°C</b><extra></extra>'
+                ))
             
             # Línea de media general
             mean_temp = recent_data['tmed'].mean()
@@ -909,7 +1016,7 @@ def create_ultra_charts(df, station='Estación específica', days=90):
             )
             
             # Banda de temperatura (máx/mín si disponible)
-            if 'tmax' in recent_data.columns and 'tmin' in recent_data.columns:
+            if show_confidence and 'tmax' in recent_data.columns and 'tmin' in recent_data.columns:
                 fig_temp.add_trace(go.Scatter(
                     x=recent_data['fecha'],
                     y=recent_data['tmax'],
@@ -949,22 +1056,26 @@ def create_ultra_charts(df, station='Estación específica', days=90):
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=13),
             title=dict(
-                text=f'<b>Evolución Térmica - {station_clean}</b>',
-                font=dict(size=18, color='white'),
-                x=0.5
+                text=f'<b>Evolución Térmica - {station_clean}</b><br><br><br><br><br><br><br><br><br><br><br><br><br>',
+                font=dict(size=16, color='white'),
+                x=0.1,
+                y=0.90
             ),
-            height=400,
+            height=500,
             hovermode='x unified',
             showlegend=True,
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
                 y=1.02,
-                xanchor="right",
-                x=1,
-                font=dict(color='white')
+                xanchor="center",
+                x=0.5,
+                font=dict(color='white', size=9),
+                bgcolor='rgba(0,0,0,0.3)',
+                bordercolor='rgba(255,255,255,0.2)',
+                borderwidth=1
             ),
-            margin=dict(l=60, r=60, t=80, b=60)
+            margin=dict(l=60, r=60, t=160, b=60)
         )
         
         fig_temp.update_xaxes(
@@ -983,72 +1094,122 @@ def create_ultra_charts(df, station='Estación específica', days=90):
         st.plotly_chart(fig_temp, use_container_width=True, config={'displayModeBar': False})
         
         # === GRÁFICOS ADICIONALES EN COLUMNAS ===
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("### 🌧️ **Análisis de Precipitación**")
+        if show_precipitation:
+            col1, col2 = st.columns(2)
             
-            fig_prec = go.Figure()
-            
-            if 'prec' in recent_data.columns:
-                # Precipitación diaria
-                fig_prec.add_trace(go.Bar(
-                    x=recent_data['fecha'],
-                    y=recent_data['prec'],
-                    name='🌧️ Precipitación Diaria',
-                    marker=dict(
-                        color=recent_data['prec'],
-                        colorscale='Blues',
-                        opacity=0.8,
-                        line=dict(width=0)
-                    ),
-                    hovertemplate='<b>%{x|%d/%m/%Y}</b><br>Precipitación: <b>%{y:.1f} mm</b><extra></extra>'
-                ))
+            with col1:
+                st.markdown("### 🌧️ **Análisis de Precipitación**")
                 
-                # Precipitación acumulada - COMENTADO para evitar conflicto yaxis2
-                # prec_cumulative = recent_data['prec'].cumsum()
-                # fig_prec.add_trace(go.Scatter(
-                #     x=recent_data['fecha'],
-                #     y=prec_cumulative,
-                #     mode='lines',
-                #     name='📈 Acumulada',
-                #     line=dict(color='#4facfe', width=3),
-                #     yaxis='y2',
-                #     hovertemplate='<b>%{x|%d/%m/%Y}</b><br>Acumulada: <b>%{y:.1f} mm</b><extra></extra>'
-                # ))
+                fig_prec = go.Figure()
+                
+                if 'prec' in recent_data.columns:
+                    # Precipitación diaria
+                    fig_prec.add_trace(go.Bar(
+                        x=recent_data['fecha'],
+                        y=recent_data['prec'],
+                        name='🌧️ Precipitación Diaria',
+                        marker=dict(
+                            color=recent_data['prec'],
+                            colorscale='Blues',
+                            opacity=0.8,
+                            line=dict(width=0)
+                        ),
+                        hovertemplate='<b>%{x|%d/%m/%Y}</b><br>Precipitación: <b>%{y:.1f} mm</b><extra></extra>'
+                    ))
+                
+                fig_prec.update_layout(
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    title=dict(
+                        text='<b>Precipitación Diaria</b>',
+                        font=dict(size=16, color='white'),
+                        x=0.3
+                    ),
+                    height=350,
+                    xaxis=dict(
+                        title=dict(text='📅 Fecha', font=dict(color='white')),
+                        tickfont=dict(color='white'),
+                        gridcolor='rgba(255,255,255,0.1)',
+                        showgrid=True
+                    ),
+                    yaxis=dict(
+                        title=dict(text='🌧️ Precipitación (mm)', font=dict(color='white')),
+                        tickfont=dict(color='white'),
+                        gridcolor='rgba(255,255,255,0.1)',
+                        showgrid=True
+                    ),
+                    showlegend=False,
+                    margin=dict(l=60, r=30, t=70, b=60)
+                )
+                
+                st.plotly_chart(fig_prec, use_container_width=True, config={'displayModeBar': False})
             
-            fig_prec.update_layout(
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
-                title=dict(
-                    text='<b>Precipitación Diaria</b>',
-                    font=dict(size=16, color='white'),
-                    x=0.5
-                ),
-                height=350,
-                xaxis=dict(
-                    title=dict(text='📅 Fecha', font=dict(color='white')),
+            with col2:
+                st.markdown("### 📊 **Distribución Térmica**")
+                
+                # Crear histograma dentro de la columna
+                fig_hist = go.Figure()
+                
+                if 'tmed' in recent_data.columns:
+                    # Histograma con curva de densidad
+                    fig_hist.add_trace(go.Histogram(
+                        x=recent_data['tmed'],
+                        name='📊 Frecuencia',
+                        nbinsx=min(20, len(recent_data)//3),
+                        marker=dict(
+                            color='rgba(102,126,234,0.7)',
+                            line=dict(color='rgba(102,126,234,1)', width=1)
+                        ),
+                        opacity=0.8,
+                        hovertemplate='Temperatura: <b>%{x:.1f}°C</b><br>Frecuencia: <b>%{y}</b><extra></extra>'
+                    ))
+                    
+                    # Líneas de percentiles
+                    q25 = recent_data['tmed'].quantile(0.25)
+                    q50 = recent_data['tmed'].quantile(0.50)
+                    q75 = recent_data['tmed'].quantile(0.75)
+                    
+                    fig_hist.add_vline(x=q25, line_dash="dash", line_color="#43e97b", 
+                                     annotation_text=f"Q1", annotation_position="top left")
+                    fig_hist.add_vline(x=q50, line_dash="solid", line_color="#f093fb", line_width=2,
+                                     annotation_text=f"Med", annotation_position="top")
+                    fig_hist.add_vline(x=q75, line_dash="dash", line_color="#fa709a",
+                                     annotation_text=f"Q3", annotation_position="top right")
+                
+                fig_hist.update_layout(
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=13),
+                    title=dict(
+                        text='<b>Distribución Térmica</b>',
+                        font=dict(size=16, color='white'),
+                        x=0.3
+                    ),
+                    height=350,
+                    showlegend=False,
+                    margin=dict(l=50, r=50, t=60, b=50)
+                )
+                
+                fig_hist.update_xaxes(
+                    title=dict(text="🌡️ Temperatura (°C)", font=dict(color='white')),
                     tickfont=dict(color='white'),
-                    gridcolor='rgba(255,255,255,0.1)',
+                    gridcolor='rgba(102,126,234,0.15)',
                     showgrid=True
-                ),
-                yaxis=dict(
-                    title=dict(text='🌧️ Precipitación (mm)', font=dict(color='white')),
+                )
+                fig_hist.update_yaxes(
+                    title=dict(text="📊 Frecuencia", font=dict(color='white')),
                     tickfont=dict(color='white'),
-                    gridcolor='rgba(255,255,255,0.1)',
+                    gridcolor='rgba(102,126,234,0.15)',
                     showgrid=True
-                ),
-                showlegend=False,
-                margin=dict(l=60, r=30, t=70, b=60)
-            )
+                )
+                
+                st.plotly_chart(fig_hist, use_container_width=True, config={'displayModeBar': False})
+                
+        else:
+            # Solo mostrar distribución estadística en una columna más ancha
+            st.markdown("### 📊 **Distribución Térmica**")
             
-
-            
-            st.plotly_chart(fig_prec, use_container_width=True, config={'displayModeBar': False})
-        
-        with col2:
-            st.markdown("### 📊 **Distribución Estadística**")
-            
+            # Crear histograma fuera de columnas (ocupando todo el ancho)
             fig_hist = go.Figure()
             
             if 'tmed' in recent_data.columns:
@@ -1082,7 +1243,7 @@ def create_ultra_charts(df, station='Estación específica', days=90):
                 paper_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=13),
                 title=dict(
-                    text='<b>Distribución de Temperaturas</b>',
+                    text='<b>Distribución Térmica</b>',
                     font=dict(size=16, color='white'),
                     x=0.5
                 ),
@@ -1110,10 +1271,12 @@ def create_ultra_charts(df, station='Estación específica', days=90):
         if len(recent_data) > 7:
             st.markdown("### 🔬 **Análisis de Patrones Meteorológicos**")
             
+            # Layout responsivo: stacked en móvil, side-by-side en desktop
             fig_patterns = make_subplots(
-                rows=1, cols=2,
+                rows=2, cols=1,
                 subplot_titles=('📈 Variabilidad Diaria', '🌀 Correlación T°-Precipitación'),
-                horizontal_spacing=0.1
+                vertical_spacing=0.25,
+                row_heights=[0.5, 0.5]
             )
             
             if 'tmed' in recent_data.columns:
@@ -1147,16 +1310,16 @@ def create_ultra_charts(df, station='Estación específica', days=90):
                                 line=dict(width=1, color='white')
                             ),
                             hovertemplate='T°: <b>%{x:.1f}°C</b><br>Precipitación: <b>%{y:.1f}mm</b><extra></extra>'
-                        ), row=1, col=2
+                        ), row=2, col=1
                     )
             
             fig_patterns.update_layout(
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=13),
-                height=350,
+                font=dict(color='#ffffff', family='Inter, system-ui, sans-serif', size=11),
+                height=650,
                 showlegend=False,
-                margin=dict(l=50, r=50, t=80, b=50)
+                margin=dict(l=50, r=50, t=80, b=70)
             )
             
             fig_patterns.update_xaxes(
@@ -1168,7 +1331,7 @@ def create_ultra_charts(df, station='Estación específica', days=90):
             )
             fig_patterns.update_xaxes(
                 title=dict(text="🌡️ Temperatura (°C)", font=dict(color='white')),
-                row=1, col=2,
+                row=2, col=1,
                 tickfont=dict(color='white'),
                 gridcolor='rgba(102,126,234,0.15)',
                 showgrid=True
@@ -1182,7 +1345,7 @@ def create_ultra_charts(df, station='Estación específica', days=90):
             )
             fig_patterns.update_yaxes(
                 title=dict(text="🌧️ Precipitación (mm)", font=dict(color='white')),
-                row=1, col=2,
+                row=2, col=1,
                 tickfont=dict(color='white'),
                 gridcolor='rgba(102,126,234,0.15)',
                 showgrid=True
@@ -1190,9 +1353,603 @@ def create_ultra_charts(df, station='Estación específica', days=90):
             
             st.plotly_chart(fig_patterns, use_container_width=True, config={'displayModeBar': False})
         
+        # === SISTEMA DE PREDICCIÓN ML PROFESIONAL ===
+        st.markdown("---")
+        st.markdown("### 🔮 **Predicción de Temperatura Media**")
+        
+        # === IMPLEMENTACIÓN EXACTA DE LA ARQUITECTURA REAL ===
+        class AdvancedPositionalEncoding(nn.Module):
+            def __init__(self, d_model: int, max_len: int):
+                super().__init__()
+                pe = torch.zeros(max_len, d_model)
+                position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+                
+                div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-np.log(10000.0) / d_model))
+                
+                pe[:, 0::2] = torch.sin(position * div_term)
+                pe[:, 1::2] = torch.cos(position * div_term)
+                pe = pe.unsqueeze(0)
+                
+                self.register_buffer('pe', pe)
+                self.dropout = nn.Dropout(0.1)
+                
+            def forward(self, x: torch.Tensor) -> torch.Tensor:
+                x = x + self.pe[:, :x.size(1)]
+                return self.dropout(x)
+
+        class MultiHeadAttentionLayer(nn.Module):
+            def __init__(self, d_model: int, n_heads: int, dropout_rate: float = 0.1):
+                super().__init__()
+                self.mha = nn.MultiheadAttention(
+                    embed_dim=d_model, 
+                    num_heads=n_heads, 
+                    dropout=dropout_rate,
+                    batch_first=True
+                )
+                self.norm = nn.LayerNorm(d_model)
+                self.dropout = nn.Dropout(dropout_rate)
+                
+            def forward(self, x: torch.Tensor) -> torch.Tensor:
+                attn_output, _ = self.mha(x, x, x, need_weights=False)
+                return self.norm(x + self.dropout(attn_output))
+
+        class FeedForwardLayer(nn.Module):
+            def __init__(self, d_model: int, dff: int, dropout_rate: float = 0.1):
+                super().__init__()
+                self.ffn = nn.Sequential(
+                    nn.Linear(d_model, dff),
+                    nn.GELU(),
+                    nn.Dropout(dropout_rate),
+                    nn.Linear(dff, d_model),
+                    nn.Dropout(dropout_rate)
+                )
+                self.norm = nn.LayerNorm(d_model)
+                
+            def forward(self, x: torch.Tensor) -> torch.Tensor:
+                return self.norm(x + self.ffn(x))
+
+        class TransformerBlock(nn.Module):
+            def __init__(self, d_model: int, n_heads: int, dff: int, dropout_rate: float = 0.1):
+                super().__init__()
+                self.attention = MultiHeadAttentionLayer(d_model, n_heads, dropout_rate)
+                self.feed_forward = FeedForwardLayer(d_model, dff, dropout_rate)
+                
+            def forward(self, x: torch.Tensor) -> torch.Tensor:
+                x = self.attention(x)
+                x = self.feed_forward(x)
+                return x
+
+        class ProductionLSTMTransformerModel(nn.Module):
+            def __init__(
+                self,
+                d_input: int,
+                lstm_hidden_size: int,
+                lstm_layers: int,
+                n_transformer_layers: int,
+                d_model: int,
+                n_heads: int,
+                dff: int,
+                max_len: int,
+                dropout_rate: float = 0.1,
+                prediccion: int = 7
+            ):
+                super().__init__()
+                
+                self.d_model = d_model
+                self.prediccion = prediccion
+                self.input_projection = nn.Linear(d_input, lstm_hidden_size)
+                
+                # LSTM Stack
+                self.lstm_layers = nn.ModuleList([
+                    nn.LSTM(
+                        input_size=lstm_hidden_size if i == 0 else lstm_hidden_size * 2,
+                        hidden_size=lstm_hidden_size,
+                        batch_first=True,
+                        dropout=dropout_rate if i < lstm_layers - 1 else 0,
+                        bidirectional=True
+                    ) for i in range(lstm_layers)
+                ])
+                
+                # Projection to transformer dimension
+                self.lstm_to_transformer = nn.Linear(lstm_hidden_size * 2, d_model)
+                
+                # Transformer Stack
+                self.pos_encoding = AdvancedPositionalEncoding(d_model, max_len)
+                self.transformer_blocks = nn.ModuleList([
+                    TransformerBlock(d_model, n_heads, dff, dropout_rate)
+                    for _ in range(n_transformer_layers)
+                ])
+                
+                # Output layers
+                self.output_norm = nn.LayerNorm(d_model)
+                self.output_layers = nn.Sequential(
+                    nn.Linear(d_model, d_model // 2),
+                    nn.GELU(),
+                    nn.Dropout(dropout_rate),
+                    nn.Linear(d_model // 2, d_model // 4),
+                    nn.GELU(),
+                    nn.Dropout(dropout_rate),
+                    nn.Linear(d_model // 4, 1)
+                )
+                
+                # Skip connection
+                self.skip_connection = nn.Linear(d_input, 1)
+                
+            def forward(self, x: torch.Tensor) -> torch.Tensor:
+                batch_size, seq_len, _ = x.shape
+                
+                # Skip connection
+                skip = self.skip_connection(x[:, -1, :])
+                
+                # Input projection
+                x = self.input_projection(x)
+                
+                # LSTM processing
+                for lstm in self.lstm_layers:
+                    x, _ = lstm(x)
+                
+                # Project to transformer dimension
+                x = self.lstm_to_transformer(x)
+                
+                # Positional encoding
+                x = self.pos_encoding(x)
+                
+                # Transformer blocks
+                for transformer_block in self.transformer_blocks:
+                    x = transformer_block(x)
+                
+                # Output processing
+                x = self.output_norm(x)
+                x = x[:, -self.prediccion:, :].mean(dim=1)
+                
+                # Main prediction
+                main_output = self.output_layers(x)
+                
+                # Combine with skip connection
+                output = main_output + 0.1 * skip
+                
+                return output
+        
+        # Interfaz de usuario para predicción
+        pred_col1, pred_col3 = st.columns([1, 1])
+        
+        with pred_col1:
+            dias_prediccion = st.selectbox(
+                "📅 Días a predecir:",
+                [1, 3, 7,],
+                index=2,
+                help="Número de días futuros a predecir"
+            )
+        
+        
+        #with pred_col3:
+            #validacion_avanzada = (
+                #"🔍 Validación avanzada",
+                
+                
+           # )
+        
+        # Botón de predicción
+        if st.button("🚀 Generar Predicción Profesional", type="primary", use_container_width=True):
+            with st.spinner("🔄 Cargando modelo y procesando datos..."):
+                try:
+                    # === 1. CARGA DEL MODELO CON RUTAS CORREGIDAS ===
+                    device = torch.device('cpu')
+                    
+                    # Buscar archivos en múltiples ubicaciones posibles
+                    model_paths = [
+                        'production_weather_model.pth',  # Local
+                        'streamlit/production_weather_model.pth',  # Streamlit Cloud
+                        './streamlit/production_weather_model.pth'  # Alternativa
+                    ]
+                    
+                    scaler_x_paths = [
+                        'scaler_X_production.joblib',
+                        'streamlit/scaler_X_production.joblib',
+                        './streamlit/scaler_X_production.joblib'
+                    ]
+                    
+                    scaler_y_paths = [
+                        'scaler_y_production.joblib',
+                        'streamlit/scaler_y_production.joblib',
+                        './streamlit/scaler_y_production.joblib'
+                    ]
+                    
+                    # Encontrar rutas válidas
+                    model_path = None
+                    scaler_x_path = None
+                    scaler_y_path = None
+                    
+                    for path in model_paths:
+                        if os.path.exists(path):
+                            model_path = path
+                            break
+                    
+                    for path in scaler_x_paths:
+                        if os.path.exists(path):
+                            scaler_x_path = path
+                            break
+                            
+                    for path in scaler_y_paths:
+                        if os.path.exists(path):
+                            scaler_y_path = path
+                            break
+                    
+                    if not all([model_path, scaler_x_path, scaler_y_path]):
+                        missing = []
+                        if not model_path: missing.append("production_weather_model.pth")
+                        if not scaler_x_path: missing.append("scaler_X_production.joblib")
+                        if not scaler_y_path: missing.append("scaler_y_production.joblib")
+                        
+                        st.error(f"Archivos no encontrados: {', '.join(missing)}")
+                        st.info(f"Directorio actual: {os.getcwd()}")
+                        st.info(f"Archivos disponibles: {os.listdir('.')}")
+                        return
+                    
+                   
+                    
+                    # Cargar modelo y scalers
+                    checkpoint = torch.load(model_path, map_location=device)
+                    
+                    # Crear modelo con arquitectura exacta del entrenamiento
+                    config = checkpoint.get('config', {})
+                    model = ProductionLSTMTransformerModel(
+                        d_input=13,
+                        lstm_hidden_size=256,
+                        lstm_layers=3,
+                        n_transformer_layers=3,
+                        d_model=128,
+                        n_heads=8,
+                        dff=512,
+                        max_len=90,
+                        dropout_rate=0.2,
+                        prediccion=7
+                    )
+                    model.load_state_dict(checkpoint['model_state_dict'])
+                    model.eval()
+                    
+                    # Cargar scalers
+                    scaler_X = joblib.load(scaler_x_path)
+                    scaler_y = joblib.load(scaler_y_path)
+                    
+                    # Features del modelo
+                    model_features = checkpoint['features']
+                    
+                    # === 2. VALIDACIÓN Y MANEJO INTELIGENTE DE DATOS ===
+                    station_data = recent_data.copy().sort_values('fecha').reset_index(drop=True)
+                    
+                    if len(station_data) < 30:
+                        st.error(f"Datos insuficientes: Se necesitan al menos 30 días de historial. Disponibles: {len(station_data)} días")
+                        st.info("Se requiere un mínimo de datos para generar predicciones fiables")
+                    else:
+                        # Manejo inteligente para secuencias menores a 90 días
+                        required_sequence = 90
+                        available_days = len(station_data)
+                        
+                        if available_days < required_sequence:
+                            # Estrategias de mitigación profesionales
+                            estrategia = st.radio(
+                                "🔧 Estrategia de manejo de datos:",
+                                [
+                                    "🔄 Padding inteligente",
+                                    
+                                ],
+                                index=0,
+                                help="Selecciona cómo manejar la falta de datos históricos"
+                            )
+                            
+                            if estrategia.startswith("🎯"):
+                                st.error("Predicción cancelada por falta de datos suficientes")
+                                st.info("Espera a tener más datos históricos o usa el padding inteligente")
+                            else:
+                                proceed_with_prediction = True
+                        else:
+                            estrategia = "🔄 Datos completos"
+                            proceed_with_prediction = True
+                        
+                        if 'proceed_with_prediction' in locals() and proceed_with_prediction:
+                            # === 3. FEATURE ENGINEERING PROFESIONAL ===
+                            
+                            # Validar features básicas
+                            required_basic = ['tmed', 'tmin', 'tmax', 'prec', 'altitud']
+                            available_basic = [f for f in required_basic if f in station_data.columns]
+                            missing_basic = [f for f in required_basic if f not in available_basic]
+                            
+                            if missing_basic:
+                                st.error(f"Features básicas faltantes: {missing_basic}")
+                            else:
+                                # Limpieza de datos anómalos (rangos realistas España)
+                                station_data.loc[station_data['tmed'] < -20, 'tmed'] = np.nan
+                                station_data.loc[station_data['tmed'] > 50, 'tmed'] = np.nan
+                                station_data.loc[station_data['tmin'] < -25, 'tmin'] = np.nan
+                                station_data.loc[station_data['tmax'] > 55, 'tmax'] = np.nan
+                                station_data.loc[station_data['prec'] < 0, 'prec'] = 0
+                                station_data.loc[station_data['prec'] > 500, 'prec'] = np.nan
+                                
+                                # Interpolación de datos faltantes
+                                for col in ['tmed', 'tmin', 'tmax']:
+                                    if col in station_data.columns:
+                                        station_data[col] = station_data[col].interpolate(method='linear', limit_direction='both')
+                                
+                                station_data['prec'] = station_data['prec'].fillna(0)
+                                
+                                # Features estacionales
+                                station_data['day_of_year'] = station_data['fecha'].dt.dayofyear
+                                station_data['season_sin'] = np.sin(2 * np.pi * station_data['day_of_year'] / 365.25)
+                                station_data['season_cos'] = np.cos(2 * np.pi * station_data['day_of_year'] / 365.25)
+                                
+                                # Features de lag
+                                for lag in [1, 3, 7]:
+                                    station_data[f'tmed_lag_{lag}'] = station_data['tmed'].shift(lag)
+                                
+                                # Estadísticas móviles
+                                station_data['tmed_mean_7d'] = station_data['tmed'].rolling(window=7, min_periods=3).mean()
+                                station_data['tmed_std_7d'] = station_data['tmed'].rolling(window=7, min_periods=3).std()
+                                
+                                # Rango térmico
+                                station_data['temp_range'] = station_data['tmax'] - station_data['tmin']
+                                
+                                # Relleno de valores faltantes para lags
+                                lag_cols = [f'tmed_lag_{lag}' for lag in [1, 3, 7]] + ['tmed_mean_7d', 'tmed_std_7d']
+                                for col in lag_cols:
+                                    if col in station_data.columns:
+                                        station_data[col] = station_data[col].fillna(method='bfill').fillna(station_data['tmed'].mean())
+                                
+                                # Verificar datos completos
+                                complete_data = station_data.dropna(subset=model_features)
+                                
+                                if len(complete_data) < 30:
+                                    st.error(f"Datos completos insuficientes: {len(complete_data)} registros válidos")
+                                else:
+                                    
+                                    # === 4. PREPARACIÓN INTELIGENTE DE SECUENCIA ===
+                                    available_complete = len(complete_data)
+                                    
+                                    if estrategia.startswith("🔄") and available_complete < required_sequence:
+                                        # PADDING INTELIGENTE PROFESIONAL
+                                        
+                                        # Usar todos los datos disponibles
+                                        base_sequence = complete_data[model_features].values
+                                        
+                                        # Calcular estadísticas para padding
+                                        means = np.mean(base_sequence, axis=0)
+                                        stds = np.std(base_sequence, axis=0)
+                                        
+                                        # Generar datos sintéticos realistas
+                                        missing_days = required_sequence - available_complete
+                                        
+                                        # Padding al inicio con variación gaussiana controlada
+                                        synthetic_data = []
+                                        for _ in range(missing_days):
+                                            synthetic_row = means + np.random.normal(0, stds * 0.3, len(model_features))
+                                            # Asegurar rangos realistas
+                                            synthetic_row[0] = np.clip(synthetic_row[0], -15, 40)  # tmed
+                                            synthetic_row[1] = np.clip(synthetic_row[1], -20, 35)  # tmin
+                                            synthetic_row[2] = np.clip(synthetic_row[2], -10, 45)  # tmax
+                                            synthetic_row[3] = np.clip(synthetic_row[3], 0, 100)   # prec
+                                            synthetic_data.append(synthetic_row)
+                                        
+                                        # Combinar datos sintéticos + datos reales
+                                        input_sequence = np.vstack([synthetic_data, base_sequence])
+                                        
+                                    elif estrategia.startswith("📊"):
+                                        # USAR DATOS DISPONIBLES CON REPETICIÓN
+                                        
+                                        base_sequence = complete_data[model_features].values
+                                        
+                                        if available_complete < required_sequence:
+                                            # Repetir secuencia hasta completar 90 días
+                                            repetitions_needed = (required_sequence // available_complete) + 1
+                                            extended_sequence = np.tile(base_sequence, (repetitions_needed, 1))
+                                            input_sequence = extended_sequence[:required_sequence]
+                                        else:
+                                            input_sequence = base_sequence[-required_sequence:]
+                                    
+                                    else:
+                                        # DATOS COMPLETOS - usar últimos 90 días
+                                        input_sequence = complete_data.tail(required_sequence)[model_features].values
+                                    
+                                    
+                                    
+                                    # === 5. ESCALADO CORRECTO Y PREDICCIÓN ===
+                                    # Verificar dimensiones finales
+                                    if input_sequence.shape != (required_sequence, len(model_features)):
+                                        st.error(f"Error en dimensiones: {input_sequence.shape} != ({required_sequence}, {len(model_features)})")
+                                    else:
+                                        
+                                        # ESCALADO CORRECTO: aplicar scaler fila por fila (día por día)
+                                        input_scaled = np.zeros_like(input_sequence)
+                                        for day in range(input_sequence.shape[0]):
+                                            # Normalizar cada día individualmente (13 features)
+                                            day_data = input_sequence[day:day+1, :]  # Shape: (1, 13)
+                                            day_scaled = scaler_X.transform(day_data)  # Shape: (1, 13)
+                                            input_scaled[day, :] = day_scaled[0, :]
+                                        
+                                        # Convertir a tensor
+                                        X_tensor = torch.FloatTensor(input_scaled).unsqueeze(0)  # Shape: (1, 90, 13)
+                                        
+                                        # Generar predicciones
+                                        predicciones = []
+                                        fechas_pred = []
+                                        
+                                        # Predicción iterativa mejorada
+                                        X_pred = X_tensor.clone()
+                                        
+                                        for day in range(dias_prediccion):
+                                            fecha_pred = station_data['fecha'].max() + timedelta(days=day+1)
+                                            fechas_pred.append(fecha_pred)
+                                            
+                                            # Predicción del modelo
+                                            with torch.no_grad():
+                                                pred_tensor = model(X_pred).cpu()
+                                                pred_scaled = float(pred_tensor.item())
+                                            
+                                            # Desnormalizar predicción
+                                            pred_temp = scaler_y.inverse_transform([[pred_scaled]])[0, 0]
+                                            
+                                            # Aplicar constraints realistas para España
+                                            pred_temp = np.clip(pred_temp, -20, 50)
+                                            predicciones.append(pred_temp)
+                                            
+                                            # Actualizar secuencia para próxima predicción
+                                            if day < dias_prediccion - 1:
+                                                # Crear nuevo registro con valores sintéticos coherentes
+                                                new_day_features = input_sequence[-1, :].copy()  # Basar en último día real
+                                                new_day_features[0] = pred_temp  # tmed predicha
+                                                
+                                                # Actualizar features derivadas básicas
+                                                if len(model_features) > 1:
+                                                    new_day_features[1] = pred_temp - 3  # tmin aprox
+                                                    new_day_features[2] = pred_temp + 5  # tmax aprox
+                                                    # Mantener otros features similares al último día
+                                                
+                                                # Escalar el nuevo día
+                                                new_day_scaled = scaler_X.transform(new_day_features.reshape(1, -1))[0]
+                                                
+                                                # Rotar secuencia: quitar primer día, añadir nuevo al final
+                                                X_pred = torch.cat([
+                                                    X_pred[:, 1:, :], 
+                                                    torch.FloatTensor(new_day_scaled).unsqueeze(0).unsqueeze(0)
+                                                ], dim=1)
+                                
+                                
+                                
+                                # === 7. PRESENTACIÓN DE RESULTADOS ===
+                                
+                                # Crear DataFrame de resultados
+                                df_prediccion = pd.DataFrame({
+                                    'Fecha': fechas_pred,
+                                    'Temperatura_Predicha': [round(p, 1) for p in predicciones],
+                                   
+                                })
+                                
+                                # Métricas de resumen
+                                col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+                                
+                                temp_actual = complete_data['tmed'].iloc[-1]
+                                temp_pred_promedio = np.mean(predicciones)
+                                variacion = temp_pred_promedio - temp_actual
+                                tendencia = "📈" if predicciones[-1] > predicciones[0] else "📉"
+                                
+                                with col_m1:
+                                    st.metric("🌡️ Temp. Actual", f"{temp_actual:.1f}°C")
+                                
+                                with col_m2:
+                                    st.metric("🔮 Pred. Promedio", f"{temp_pred_promedio:.1f}°C", 
+                                             delta=f"{variacion:+.1f}°C")
+                                
+                                with col_m3:
+                                    st.metric("📊 Rango Predicción", 
+                                             f"{min(predicciones):.1f}°C - {max(predicciones):.1f}°C")
+                                
+                                with col_m4:
+                                    st.metric("📈 Tendencia", f"{tendencia} {abs(predicciones[-1] - predicciones[0]):.1f}°C")
+                                
+                                # Gráfico de predicción
+                                fig_pred = go.Figure()
+                                
+                                # Datos históricos (últimos 30 días)
+                                hist_data = complete_data.tail(30)
+                                fig_pred.add_trace(go.Scatter(
+                                    x=hist_data['fecha'],
+                                    y=hist_data['tmed'],
+                                    mode='lines+markers',
+                                    name='📊 Histórico',
+                                    line=dict(color='#4fc3f7', width=2),
+                                    marker=dict(size=6)
+                                ))
+                                
+                                # Predicciones
+                                fig_pred.add_trace(go.Scatter(
+                                    x=df_prediccion['Fecha'],
+                                    y=df_prediccion['Temperatura_Predicha'],
+                                    mode='lines+markers',
+                                    name='🔮 Predicción ML',
+                                    line=dict(color='#ff6b6b', width=3, dash='dot'),
+                                    marker=dict(size=8, symbol='star')
+                                ))
+                                
+                            
+                                
+                                
+                                
+                                fig_pred.update_layout(
+                                    title=dict(
+                                        text=f"🔮Temperatura Media ({station_clean})",
+                                        font=dict(color='white', size=18),
+                                        x=0.0,
+                                        xanchor='left'
+                                    ),
+                                    plot_bgcolor='rgba(0,0,0,0)',
+                                    paper_bgcolor='rgba(0,0,0,0)',
+                                    font=dict(color='white'),
+                                    height=450,
+                                    xaxis=dict(
+                                        title="📅 Fecha",
+                                        gridcolor='rgba(102,126,234,0.15)',
+                                        showgrid=True
+                                    ),
+                                    yaxis=dict(
+                                        title="🌡️ Temperatura (°C)",
+                                        gridcolor='rgba(102,126,234,0.15)',
+                                        showgrid=True
+                                    ),
+                                    legend=dict(
+                                        orientation="h",
+                                        yanchor="top",
+                                        y=1.0,
+                                        xanchor="right",
+                                        x=0.3,
+                                        bgcolor='rgba(0,0,0,0.3)',
+                                        bordercolor='rgba(255,255,255,0.2)',
+                                        borderwidth=1,
+                                        font=dict(color='white', size=10)
+                                    )
+                                )
+                                
+                                st.plotly_chart(fig_pred, use_container_width=True, config={'displayModeBar': False})
+                                
+                                # Tabla de resultados detallados
+                                st.markdown("#### 📋 Resultados Detallados")
+                                
+                                # Crear DataFrame con formato mejorado
+                                df_display = df_prediccion.copy()
+                                df_display['Temperatura_Predicha'] = df_display['Temperatura_Predicha'].apply(lambda x: f"{x:.1f}°C")
+                                df_display['Fecha'] = df_display['Fecha'].dt.strftime('%d/%m/%Y')
+                                
+                                st.dataframe(
+                                    df_display,
+                                    use_container_width=True,
+                                    hide_index=True
+                                )
+                                
+                                # Información del modelo
+                                with st.expander("ℹ️ Información del Modelo ML"):
+                                    metrics = checkpoint.get('metrics', {})
+                                    
+                                    st.markdown(f"""
+                                    **🤖 Arquitectura:** LSTM Bidireccional + Transformer + Skip Connections  
+                                    **📊 Features:** {len(model_features)} variables (temperatura, meteorología, lags, estadísticas)  
+                                    **🎯 Rendimiento:**
+                                    - MAE: {metrics.get('mae', 'N/A'):.3f}°C
+                                    - RMSE: {metrics.get('rmse', 'N/A'):.3f}°C  
+                                    - R²: {metrics.get('r2', 'N/A'):.3f}
+                                    
+                                    **⚡ Configuración:**
+                                    - Secuencia entrada: 90 días
+                                    - Predicción: Iterativa día a día
+                                   
+                                    
+                                    **📈 Features utilizadas:** {', '.join(model_features)}
+                                    """)
+                                
+                except Exception as model_error:
+                    st.error(f"Error en el sistema de predicción: {str(model_error)}")
+                    st.info("Verifica que todos los archivos del modelo estén presentes y sean compatibles")
+        
     except Exception as e:
-        st.error(f"❌ Error creando visualizaciones: {str(e)}")
-        st.info("💡 Verifica que los datos contienen las columnas necesarias (fecha, tmed, prec, etc.)")
+        st.error(f"Error creando visualizaciones: {str(e)}")
+        st.info("Verifica que los datos contienen las columnas necesarias (fecha, tmed, prec, etc.)")
 
 def render_advanced_data_table(df, station='Estación específica', limit=100):
     """Tabla de datos avanzada con métricas"""
@@ -1200,7 +1957,7 @@ def render_advanced_data_table(df, station='Estación específica', limit=100):
         df_table, station_clean = filter_by_station(df, station)
         
         if df_table.empty:
-            st.warning("⚠️ No hay datos para mostrar")
+            st.warning("No hay datos para mostrar")
             return
         
         # Preparar datos para la tabla
@@ -1266,7 +2023,7 @@ def render_advanced_data_table(df, station='Estación específica', limit=100):
         )
         
     except Exception as e:
-        st.error(f"❌ Error preparando tabla: {str(e)}")
+        st.error(f"Error preparando tabla: {str(e)}")
 
 # ===== APLICACIÓN PRINCIPAL =====
 def main():
@@ -1357,8 +2114,8 @@ def main():
         
         # Estado del sistema
         st.markdown("### 📊 Estado del Sistema")
-        st.success("✅ Sistema operativo")
-        st.info(f"🔄 Sincronizado: {datetime.now().strftime('%H:%M:%S')}")
+        st.success("Sistema operativo")
+        st.info(f"Sincronizado: {datetime.now().strftime('%H:%M:%S')}")
         
         # Información de datos
         df_filtered, station_clean = filter_by_station(df, selected_station)
@@ -1402,16 +2159,25 @@ def main():
     
     with col1:
         st.markdown("## 📈 Análisis Meteorológico Avanzado")
-        create_ultra_charts(df_filtered, selected_station, dias_analisis)
+        create_ultra_charts(df_filtered, selected_station, dias_analisis, show_trends, show_confidence, show_precipitation)
     
     with col2:
         st.markdown("## 🤖 Asistente de Consultas con IA")
         st.info("Pregunta al asistente sobre los datos históricos del clima. Por ejemplo: '¿Cuál fue la temperatura media en Madrid en mayo de 2023?'")
         
-        pregunta = st.text_input("Haz tu pregunta aquí:", key="ask_input", placeholder="Ejemplo: ¿Cuál fue la precipitación total en Valencia en 2022?")
+        # Inicializar el estado si no existe
+        if 'selected_example' not in st.session_state:
+            st.session_state.selected_example = ""
+        
+        # Usar el valor del ejemplo seleccionado si existe
+        default_value = st.session_state.selected_example if st.session_state.selected_example else ""
+        
+        pregunta = st.text_input("Haz tu pregunta aquí:", value=default_value, placeholder="Ejemplo: ¿Cuál fue la precipitación total en Valencia en 2022?")
 
-        if st.button("❓ Hacer Pregunta", type="primary", use_container_width=True):
+        if st.button("Hacer Pregunta", type="primary", use_container_width=True):
             if pregunta:
+                # Limpiar el ejemplo seleccionado después de usar la pregunta
+                st.session_state.selected_example = ""
                 with st.spinner("🧠 El asistente está buscando la respuesta..."):
                     try:
                         payload = {"pregunta": pregunta}
@@ -1425,13 +2191,13 @@ def main():
                             error_detail = response.json().get('detail', 'Error desconocido.')
                             st.error(f"Error de la API ({response.status_code}): {error_detail}")
                     except requests.exceptions.ConnectionError:
-                        st.error("❌ No se pudo conectar con el servidor de IA. Verifica que la API esté ejecutándose en http://16.171.198.191:8000")
+                        st.error("No se pudo conectar con el servidor de IA. Verifica que la API esté ejecutándose en http://16.171.198.191:8000")
                     except requests.exceptions.Timeout:
-                        st.error("⏱️ La consulta tardó demasiado tiempo. Intenta con una pregunta más específica.")
+                        st.error("La consulta tardó demasiado tiempo. Intenta con una pregunta más específica.")
                     except Exception as e:
-                        st.error(f"❌ Ha ocurrido un error al conectar con la API: {e}")
+                        st.error(f"Ha ocurrido un error al conectar con la API: {e}")
             else:
-                st.warning("⚠️ Por favor, introduce una pregunta.")
+                st.warning("Por favor, introduce una pregunta.")
         
         st.markdown("---")
         
@@ -1439,16 +2205,16 @@ def main():
         st.markdown("### 💡 Ejemplos de Consultas")
         
         ejemplos = [
-            "¿Cuál fue la temperatura máxima en Barcelona en julio de 2023?",
-            "¿Qué mes tuvo más precipitación en Madrid en 2022?",
+            "¿Cuál fue la temperatura media anual en 2024?",
+            "¿Cuál es la diferencia de temperatura entre marzo y agosto en Valencia en 2023?",
             "¿Cuál es la diferencia de temperatura entre enero y julio en Sevilla?",
             "¿Cuántos días llovió en Valencia en el último mes?",
             "¿Cuál fue la temperatura media en Andalucía en verano?"
         ]
         
         for i, ejemplo in enumerate(ejemplos, 1):
-            if st.button(f"📝 {ejemplo}", key=f"ejemplo_{i}", use_container_width=True):
-                st.session_state.ask_input = ejemplo
+            if st.button(f"🗨️ {ejemplo}", key=f"ejemplo_{i}", use_container_width=True):
+                st.session_state.selected_example = ejemplo
                 st.rerun()
         
         st.markdown("---")
@@ -1491,3 +2257,12 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
