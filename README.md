@@ -23,10 +23,9 @@ Para ejecutar este proyecto, necesitas tener instalados los siguientes component
 
     -PostgreSQL (con una base de datos configurada y datos históricos)
 
- 	-Instancia EC2
+ 	-EC2( con clave .pem para su conexión SSH , grupo de seguridad con permisos de entrada y salida de trafico acorde a los puertos a utilizar)
 
-    -Acceso a AWS (con credenciales configuradas para S3, clave/s .pem de su instancia EC2 para realizar la conexion SSH,
-	 grupo de seguridad con permisos de entrada y salida acordes a los puertos que vaya a utilizar)
+    -Acceso a AWS (con credenciales configuradas para S3)
 
   	
 
