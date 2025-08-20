@@ -94,10 +94,13 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 		<Para evitar errores de descargas volvemos a resetear sparse-checkout>
 
 		git sparse-checkout set --no-cone		
-   
+
+
+
 
     <instalamos las dependencias que hemos especificado en nuestro requirements.txt>
 	 pip install -r requirements.txt
+  
 
    
     -B. Cree un Bucket S3 en su consola de AWS y  suba el contenido de la carpeta API además de los archivos 
@@ -132,7 +135,8 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
    
     aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
    
-	
+
+ 
     <instalamos las dependencias que hemos especificado en requirements.txt>
 	 pip install -r requirements.txt
 
