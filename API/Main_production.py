@@ -6,14 +6,15 @@ import tempfile
 import unicodedata
 
 # Importaciones de lógica de negocio
-from model_production import generar_forecast 
+from model_production import predecir_temperatura
 from qa_production import GeminiAssistant
 
 # Importaciones de carga de modelos PyTorch
 import torch
-import torch.nn as nn
-import math
 from joblib import load
+
+# Importar arquitectura del modelo desde archivo separado
+from model_architecture import ProductionLSTMTransformerModel
 
 # --- Configuración de rutas locales en EC2 ---
 MODEL_PATH = "./production_weather_model.pth"  # Ruta local en EC2
@@ -30,157 +31,6 @@ scaler_y = None
 
 # Instancia del asistente de preguntas
 assistant = GeminiAssistant()
-
-# --- Definición del Modelo PyTorch (arquitectura del notebook) ---
-class AdvancedPositionalEncoding(nn.Module):
-    def __init__(self, d_model: int, max_len: int):
-        super().__init__()
-        pe = torch.zeros(max_len, d_model)
-        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
-        
-        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
-        
-        pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
-        pe = pe.unsqueeze(0)
-        
-        self.register_buffer('pe', pe)
-        self.dropout = nn.Dropout(0.1)
-        
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = x + self.pe[:, :x.size(1)]
-        return self.dropout(x)
-
-class MultiHeadAttentionLayer(nn.Module):
-    def __init__(self, d_model: int, n_heads: int, dropout_rate: float = 0.1):
-        super().__init__()
-        self.mha = nn.MultiheadAttention(
-            embed_dim=d_model, 
-            num_heads=n_heads, 
-            dropout=dropout_rate,
-            batch_first=True
-        )
-        self.norm = nn.LayerNorm(d_model)
-        self.dropout = nn.Dropout(dropout_rate)
-        
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        attn_output, _ = self.mha(x, x, x, need_weights=False)
-        return self.norm(x + self.dropout(attn_output))
-
-class FeedForwardLayer(nn.Module):
-    def __init__(self, d_model: int, dff: int, dropout_rate: float = 0.1):
-        super().__init__()
-        self.ffn = nn.Sequential(
-            nn.Linear(d_model, dff),
-            nn.GELU(),
-            nn.Dropout(dropout_rate),
-            nn.Linear(dff, d_model),
-            nn.Dropout(dropout_rate)
-        )
-        self.norm = nn.LayerNorm(d_model)
-        
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.norm(x + self.ffn(x))
-
-class TransformerBlock(nn.Module):
-    def __init__(self, d_model: int, n_heads: int, dff: int, dropout_rate: float = 0.1):
-        super().__init__()
-        self.attention = MultiHeadAttentionLayer(d_model, n_heads, dropout_rate)
-        self.feed_forward = FeedForwardLayer(d_model, dff, dropout_rate)
-        
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.attention(x)
-        x = self.feed_forward(x)
-        return x
-
-class ProductionLSTMTransformerModel(nn.Module):
-    def __init__(
-        self,
-        d_input: int,
-        lstm_hidden_size: int,
-        lstm_layers: int,
-        n_transformer_layers: int,
-        d_model: int,
-        n_heads: int,
-        dff: int,
-        max_len: int,
-        dropout_rate: float = 0.1,
-    ):
-        super().__init__()
-        
-        self.d_model = d_model
-        self.input_projection = nn.Linear(d_input, lstm_hidden_size)
-        
-        # LSTM Stack
-        self.lstm_layers = nn.ModuleList([
-            nn.LSTM(
-                input_size=lstm_hidden_size if i == 0 else lstm_hidden_size * 2,
-                hidden_size=lstm_hidden_size,
-                batch_first=True,
-                dropout=dropout_rate if i < lstm_layers - 1 else 0,
-                bidirectional=True
-            ) for i in range(lstm_layers)
-        ])
-        
-        # Projection to transformer dimension
-        self.lstm_to_transformer = nn.Linear(lstm_hidden_size * 2, d_model)
-        
-        # Transformer Stack
-        self.pos_encoding = AdvancedPositionalEncoding(d_model, max_len)
-        self.transformer_blocks = nn.ModuleList([
-            TransformerBlock(d_model, n_heads, dff, dropout_rate)
-            for _ in range(n_transformer_layers)
-        ])
-        
-        # Output layers
-        self.output_norm = nn.LayerNorm(d_model)
-        self.output_layers = nn.Sequential(
-            nn.Linear(d_model, d_model // 2),
-            nn.GELU(),
-            nn.Dropout(dropout_rate),
-            nn.Linear(d_model // 2, d_model // 4),
-            nn.GELU(),
-            nn.Dropout(dropout_rate),
-            nn.Linear(d_model // 4, 1)
-        )
-        
-        # Skip connection
-        self.skip_connection = nn.Linear(d_input, 1)
-        
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        batch_size, seq_len, _ = x.shape
-        
-        # Skip connection
-        skip = self.skip_connection(x[:, -1, :])
-        
-        # Input projection
-        x = self.input_projection(x)
-        
-        # LSTM processing
-        for lstm in self.lstm_layers:
-            x, _ = lstm(x)
-        
-        # Project to transformer dimension
-        x = self.lstm_to_transformer(x)
-        
-        # Positional encoding
-        x = self.pos_encoding(x)
-        
-        # Transformer blocks
-        for transformer_block in self.transformer_blocks:
-            x = transformer_block(x)
-        
-        # Output processing
-        x = self.output_norm(x)
-        x = x[:, -7:, :].mean(dim=1)  # prediccion = 7 según el notebook
-        
-        # Main prediction
-        main_output = self.output_layers(x)
-        
-        # Combine with skip connection
-        output = main_output + 0.1 * skip
-        
-        return output
 
 # --- Función de Lifespan para cargar recursos al inicio ---
 @asynccontextmanager
@@ -267,14 +117,30 @@ app = FastAPI(title="API de Predicción y Preguntas", lifespan=lifespan)
 
 # --- Modelos Pydantic para las solicitudes ---
 class ForecastRequest(BaseModel):
-    ubicacion: str
-    dias: int
+    provincia: str
+    dias_a_predecir: int
 
 class AskRequest(BaseModel):
     pregunta: str
 
 
 # --- Endpoints de la API ---
+@app.get("/")
+async def root():
+    """Endpoint raíz - información básica de la API."""
+    return {
+        "mensaje": "API de Predicción Meteorológica y Consultas IA",
+        "version": "2.0",
+        "endpoints": {
+            "prediccion": "/predecir",
+            "conversacion": "/conversacion", 
+            "legacy": "/forecast",
+            "qa": "/ask"
+        },
+        "documentacion": "/docs",
+        "estado": "Operativo"
+    }
+
 @app.post("/ask")
 async def ask(request: AskRequest):
     """Endpoint para hacer preguntas en lenguaje natural."""
@@ -305,32 +171,45 @@ async def ask(request: AskRequest):
         raise HTTPException(status_code=500, detail=f"Ocurrió un error interno: {e}")
 
 
-@app.post("/forecast")
-async def forecast(request: ForecastRequest):
-    """Endpoint para generar un pronóstico del tiempo."""
+@app.post("/predecir")
+async def predecir(request: ForecastRequest):
+    """Endpoint para generar predicciones de temperatura."""
     try:
-        print(f"Solicitud de pronóstico para ubicación: {request.ubicacion}, días: {request.dias}")
+        print(f"Solicitud de predicción para provincia: {request.provincia}, días: {request.dias_a_predecir}")
         
-        # --- PRE-PROCESAMIENTO: Quitar tildes, caracteres especiales y pasar a mayúsculas ---
-        ubicacion_procesada = unicodedata.normalize('NFKD', request.ubicacion).encode('ascii', 'ignore').decode('utf-8').upper()
-        
-
-        # Llamar a la función de pronóstico con la ubicación procesada
-        forecast_results = generar_forecast(
-            ubicacion=ubicacion_procesada,
-            dias_a_predecir=request.dias,
-            model=model, 
+        # Llamar a la función de predicción con datos reales
+        resultado_prediccion = predecir_temperatura(
+            provincia=request.provincia,
+            dias_a_predecir=request.dias_a_predecir,
             scaler_X=scaler_X, 
             scaler_y=scaler_y, 
-            label_encoder=label_encoder
+            label_encoder=label_encoder,
+            model=model
         )
 
-        if isinstance(forecast_results, dict) and "error" in forecast_results:
-            raise HTTPException(status_code=400, detail=forecast_results["error"])
-
-        return {"ubicacion": ubicacion_procesada, "pronostico": forecast_results}
+        return resultado_prediccion
+        
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ocurrió un error interno en el pronóstico: {e}")
+        raise HTTPException(status_code=500, detail=f"Error en la predicción: {e}")
+
+@app.post("/conversacion")
+async def conversacion(request: AskRequest):
+    """Endpoint para consultas conversacionales usando Gemini AI."""
+    try:
+        print(f"Consulta conversacional: {request.pregunta}")
+        
+        # Usar el asistente Gemini para responder
+        respuesta = assistant.generar_respuesta_desde_pregunta(request.pregunta)
+        
+        return {"respuesta": respuesta}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en consulta conversacional: {e}")
+
+@app.post("/forecast")
+async def forecast(request: ForecastRequest):
+    """Endpoint legacy para compatibilidad (redirige a /predecir)."""
+    return await predecir(request)
     
 
 
