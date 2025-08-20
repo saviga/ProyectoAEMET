@@ -103,8 +103,8 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
     -B. Cree un Bucket S3 en su consola de AWS y  suba el contenido de la carpeta API además de los archivos 
     production_weather_model.pth, scaler_X_production.joblib y scaler_y_production.joblib que se encuentran
     en la carpeta de streamlit.
-   			> [!IMPORTANT]
-			> <Asegúrese de que su instancia EC2 tenga los permisos necesarios para acceder a S3>
+   			
+			<Asegúrese de que su instancia EC2 tenga los permisos necesarios para acceder a S3>
 
    				<Para ello, acceda a IAM en AWS y cree un nuevo rol con la siguiente politica>
    					{
@@ -124,8 +124,8 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 					        }
 					    ]
 					}
-				> [!IMPORTANT]
-   				> <Tras crear el rol, asignelo a su instancia EC2>
+				
+   				<Tras crear el rol, asignelo a su instancia EC2>
 
 
 
