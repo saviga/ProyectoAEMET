@@ -57,8 +57,11 @@ ssh -v -i '/path_to_your_pem_key/key_name.pem' ec2-user@<ec2_public_ip>
 **4. Configure the Virtual Environment and Dependencies**
 
 sudo yum update -y
+
 sudo yum install -y python3 python3-pip git nginx awscli
+
 python3 -m venv venv
+
 source venv/bin/activate
 
 **5. Create a Directory**
