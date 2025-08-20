@@ -132,10 +132,15 @@ The project uses environment variables to connect to the PostgreSQL database. Yo
 Replace the example values with your actual credentials:
 
 export GOOGLE_API_KEY=<api_key>
+
 export PG_HOST="<your_postgresql_host>"
+
 export PG_PORT="5432" # or the port you use
+
 export PG_USER="<your_postgresql_user>"
+
 export PG_PASSWORD="<your_postgresql_password>"
+
 export PG_DATABASE="<your_postgresql_database>"
 
 
