@@ -129,6 +129,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
    
     -Y descarge el contenido de su S3 directamente a su instancia EC2.
+   
     aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
    
 	
