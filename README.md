@@ -1,10 +1,10 @@
-🌍 API de Predicción de Temperatura y Asistente Gemini sobre AEMET 
+🌍 **API de Predicción de Temperatura y Asistente Gemini sobre AEMET** 
 
 Bienvenido al repositorio de la API de Predicción de Temperatura y Asistente Gemini. Este proyecto es un servicio web basado en FastAPI que combina un modelo de Machine Learning de tipo Encoder-Decoder para predecir la temperatura y un asistente virtual integrado para consultas de datos históricos.
 
 La API se despliega en una instancia de AWS EC2 y utiliza PostgreSQL como base de datos para almacenar datos meteorológicos históricos. Los modelos de ML se cargan desde un bucket de S3 para una gestión de recursos eficiente.
 
-🚀 Características Principales
+**🚀 Características Principales**
 
     Predicción de Temperatura: Utiliza un modelo  híbrido que combina una pila de capas LSTM bidireccionales con una pila de bloques Transformer entrenado con pytorch para generar pronósticos de temperatura a futuro.
 
@@ -15,7 +15,7 @@ La API se despliega en una instancia de AWS EC2 y utiliza PostgreSQL como base d
     API RESTful: Ofrece endpoints RESTful claros para la predicción de pronósticos y para interactuar con el asistente.
 
 
-🛠️ Prerrequisitos
+**🛠️ Prerrequisitos**
 
 Para ejecutar este proyecto, necesitas tener instalados los siguientes componentes:
 
@@ -29,7 +29,7 @@ Para ejecutar este proyecto, necesitas tener instalados los siguientes component
 
   	
 
-⚙️ Instalación y Configuración
+**⚙️Instalación y Configuración**
 
 Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una instancia de EC2.
 
@@ -128,19 +128,13 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
    				<Tras crear el rol, asignelo a su instancia EC2>
 
 
-
-
-
-
 		    <Descarge archivos desde S3 a EC2>
 		    aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
 		   	 
 		    <Instalación de dependencias>
 			 pip install -r requirements.txt
 
-   
-			
-	   
+      
   
 
 **7. Configurar las Variables de Entorno**
