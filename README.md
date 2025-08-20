@@ -104,7 +104,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
     production_weather_model.pth, scaler_X_production.joblib y scaler_y_production.joblib que se encuentran
     en la carpeta de streamlit.
    
-			**<Asegúrese de que su instancia EC2 tenga los permisos necesarios para acceder a S3>**
+			[!IMPORTANT]<Asegúrese de que su instancia EC2 tenga los permisos necesarios para acceder a S3>
 
    				<Para ello, acceda a IAM en AWS y cree un nuevo rol con la siguiente politica>
    					{
@@ -125,17 +125,17 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 					    ]
 					}
 
-   				**<Tras crear el rol, asignelo a su instancia EC2>**
+   				[!IMPORTANT] <Tras crear el rol, asignelo a su instancia EC2>
 
 
 
 
 
 
-		    **<Descarge archivos desde S3 a EC2>**
+		    <Descarge archivos desde S3 a EC2>
 		    aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
 		   	 
-		    **<Instalación de dependencias>**
+		    <Instalación de dependencias>
 			 pip install -r requirements.txt
 
    
@@ -166,7 +166,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 	
 	#Si todo está configurado correctamente, verás en la consola que los modelos se cargan desde S3 y que la aplicación se inicia sin errores.
 
-🧪 Uso de la API
+🧪 **Uso de la API**
 
 Una vez que la API está funcionando, puedes interactuar con ella a través de dos endpoints principales: Forecast(para predicciones) y Ask(para recibir información de históricos)
 
