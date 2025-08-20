@@ -1,10 +1,10 @@
-🌍 Temperature Prediction API and Gemini Assistant for AEMET
+**🌍  Temperature Prediction API and Gemini Assistant for AEMET** 
 
 Welcome to the repository for the Temperature Prediction API and Gemini Assistant. This project is a FastAPI-based web service that combines a hybrid Machine Learning model to predict temperature and an integrated virtual assistant for historical data queries.
 
 The API is deployed on an AWS EC2 instance and uses PostgreSQL as the database to store historical weather data. The ML models are loaded from an S3 bucket for efficient resource management.
 
-🚀 Key Features
+**🚀 Key Features**
 
     Temperature Prediction: Uses a hybrid model that combines a stack of bidirectional LSTM layers with a stack of Transformer blocks, trained with PyTorch, to generate future temperature forecasts.
 
@@ -14,7 +14,7 @@ The API is deployed on an AWS EC2 instance and uses PostgreSQL as the database t
 
     RESTful API: Offers clear RESTful endpoints for forecast prediction and for interacting with the assistant.
 
-🛠️ Prerequisites
+**🛠️Prerequisites**
 
 To run this project, you need to have the following components installed:
 
@@ -31,21 +31,22 @@ To run this project, you need to have the following components installed:
     Create Lambdas with the LambdaS3 (to extract data from the API and save it to S3) and LambdaBD (to save the extracted data to RDS) files.
 
         <remember to set the environment variables in the lambda configuration and the necessary layers for the libraries>
+  	
 
-⚙️ Installation and Configuration
+**⚙️Installation and Configuration**
 
 Follow these steps to get the project up and running in your local environment or on an EC2 instance.
 
-1. Clone the Repository
+**1. Clone the Repository**
 
 git clone <repository_url>
 cd <your_repository_name>
 
-2. Grant Permissions to Your .pem Key to Allow SSH Connection to EC2
+**2. Grant Permissions to Your .pem Key to Allow SSH Connection to EC2**
 
 chmod 400 /path_to_your_pem_key/key_name.pem
-
-3. SSH Connection to Your EC2 Instance
+   
+**3. SSH Connection to Your EC2 Instance**
 
 ssh -v -i '/path_to_your_pem_key/key_name.pem' ec2-user@<ec2_public_ip>
 
@@ -53,19 +54,19 @@ ssh -v -i '/path_to_your_pem_key/key_name.pem' ec2-user@<ec2_public_ip>
 
     <ec2-user changes depending on the AMI (Amazon Machine Image) you use to launch the EC2 instance>
 
-4. Configure the Virtual Environment and Dependencies
+**4. Configure the Virtual Environment and Dependencies**
 
 sudo yum update -y
 sudo yum install -y python3 python3-pip git nginx awscli
 python3 -m venv venv
 source venv/bin/activate
 
-5. Create a Directory
+**5. Create a Directory**
 
 mkdir /home/ec2-user/fastapi_app
 cd /home/ec2-user/fastapi_app
 
-6. Download Content from GitHub or S3 and Install Dependencies
+**6. Download Content from GitHub or S3 and Install Dependencies**
 
     A. Copy the necessary files directly from your GitHub repository
 
@@ -96,22 +97,22 @@ cd /home/ec2-user/fastapi_app
         <Make sure your EC2 instance has the necessary permissions to access S3>
 
         <To do this, go to IAM in AWS and create a new role with the following policy>
-        {
-        "Version": "2012-10-17",
-        "Statement": [
-        {
-        "Effect": "Allow",
-        "Action": [
-        "s3:GetObject",
-        "s3:ListBucket"
-        ],
-        "Resource": [
-        "arn:aws:s3:::<your_bucket_name>",
-        "arn:aws:s3:::<your_bucket_name>/*"
-        ]
-        }
-        ]
-        }
+                        {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                                    {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                    "s3:GetObject",
+                                    "s3:ListBucket"
+                                    ],
+                                    "Resource": [
+                                    "arn:aws:s3:::<your_bucket_name>",
+                                    "arn:aws:s3:::<your_bucket_name>/*"
+                                                                    ]
+                                                                        }
+                                                                        ]
+                                                                        }
 
         <After creating the role, assign it to your EC2 instance>
 
@@ -121,7 +122,7 @@ cd /home/ec2-user/fastapi_app
         <Dependency installation>
         pip install -r requirements.txt
 
-7. Configure Environment Variables
+**7. Configure Environment Variables**
 
 The project uses environment variables to connect to the PostgreSQL database. You must define them in your terminal before starting the application.
 
@@ -134,7 +135,7 @@ export PG_USER="<your_postgresql_user>"
 export PG_PASSWORD="<your_postgresql_password>"
 export PG_DATABASE="<your_postgresql_database>"
 
-8. Start the Application
+**8. Start the Application**
 
 Once the environment variables are configured, you can start the Uvicorn server. It is important to use the --workers 1 flag for model loading.
 
@@ -142,7 +143,7 @@ uvicorn Main_production:app --host 0.0.0.0 --port 8000 --workers 1
 
     #If everything is configured correctly, you will see in the console that the models are loaded from S3 and that the application starts without errors.
 
-🧪 API Usage
+**🧪 API Usage**
 
 Once the API is running, you can interact with it through two main endpoints: Forecast (for predictions) and Ask (to receive historical information).
 
@@ -199,11 +200,11 @@ Once the API is running, you can interact with it through two main endpoints: Fo
         "sql_generada": "SELECT AVG(tmed) FROM datos_clima WHERE nombre = 'Madrid' AND fecha BETWEEN '2024-05-01' AND '2024-05-31'"
         }
 
-🤝 Contributions
+**🤝 Contributions**
 
 Contributions are welcome. If you have ideas for improvement, open an issue or create a pull request.
 
-📖 Documentation
+**📖 Documentation**
 
 You can access the interactive API documentation in your browser by visiting the following address:
 
