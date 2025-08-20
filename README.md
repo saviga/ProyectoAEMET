@@ -23,9 +23,12 @@ Para ejecutar este proyecto, necesitas tener instalados los siguientes component
 
     -PostgreSQL (con una base de datos configurada y datos históricos)
 
-    -Acceso a AWS (con credenciales configuradas para S3)
+ 	-Instancia EC2
 
+    -Acceso a AWS (con credenciales configuradas para S3, clave/s .pem de su instancia EC2 para realizar la conexion SSH,
+	 grupo de seguridad con permisos de entrada y salida acordes a los puertos que vaya a utilizar)
 
+  	
 
 ⚙️ Instalación y Configuración
 
@@ -57,10 +60,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 	sudo yum install -y python3 python3-pip git nginx awscli
 
 	python3 -m venv venv
-	source venv/bin/activate
-
-	<instalamos las dependencias que hemos especificado en nuestro requirements.txt>
-	pip install -r requirements.txt
+	source venv/bin/activate	
 
 
 5. Creación directorio
@@ -69,14 +69,82 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
    
 	cd /home/ec2-user/fastapi_app
 
-6. Descargar contenido desde S3
+6. Descargar contenido desde Github o S3  e instalar dependencias
    
+	 -A. Copie los archivos necesarios directamente desde su repositorio de Github
+   
+   		<Creamos un repositorio vacio para la descarga selectiva>
+   		git clone --no-checkout <URL_del_repositorio>
+		cd <nombre_del_repositorio>
+		git sparse-checkout init --cone
+
+		<Descargamos el contenido de API>
+
+		git sparse-checkout set API    
+		git sparse-checkout set API/Main_production.py API/model_architecture.py API/model_production.py API/qa_production.py API/requirements.txt
+
+   		<Limpiamos la configuración actual de sparse-checkout>
+
+   		git sparse-checkout set --no-cone
+
+   		<Descargamos el modelo y sus pesos desde el directorio streamlit>
+
+   		git sparse-checkout set streamlit    
+		git sparse-checkout set streamlit/production_weather_model.pth streamlit/scaler_X_production.joblib streamlit/scaler_y_production.joblib
+
+		<Para evitar errores de descargas volvemos a resetear sparse-checkout>
+
+		git sparse-checkout set --no-cone		
+   
+
+    <instalamos las dependencias que hemos especificado en nuestro requirements.txt>
+	 pip install -r requirements.txt
+
+   
+    -B. Cree un Bucket S3 en su consola de AWS y  suba el contenido de la carpeta API además de los archivos 
+    production_weather_model.pth, scaler_X_production.joblib y scaler_y_production.joblib que se encuentran
+    en la carpeta de streamlit.
+   
+			<Asegúrese de que su instancia EC2 tenga los permisos necesarios para acceder a S3>
+
+   				<Para ello, acceda a IAM en AWS y crea un nuevo rol con la siguiente politica>
+   					{
+					    "Version": "2012-10-17",
+					    "Statement": [
+					        {
+					            "Effect": "Allow",
+					            "Action": [
+					   			"s3:GetObject",
+					   
+					   			 "s3:ListBucket"
+					            ],
+					            "Resource": [
+					                "arn:aws:s3:::<nombre_de_tu_bucket>",
+					                "arn:aws:s3:::<nombre_de_tu_bucket>/*"
+					            ]
+					        }
+					    ]
+					}
+
+   				<Tras crear el rol, asignelo a su instancia EC2>
+
+   
+    -Y descarge el contenido de su S3 directamente a su instancia EC2.
     aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
    
-    <Asegúrate de que tu instancia EC2 tenga los permisos necesarios para acceder a S3>
+	
+    <instalamos las dependencias que hemos especificado en requirements.txt>
+	 pip install -r requirements.txt
 
-7. Configurar las Variables de Entorno
-	El proyecto usa variables de entorno para conectarse a la base de datos PostgreSQL. Debes definirlas en tu terminal antes de iniciar la aplicación.
+		
+   
+  
+
+8. Configurar las Variables de Entorno
+   
+	El proyecto usa variables de entorno para conectarse a la base de datos PostgreSQL.
+    Debes definirlas en tu terminal antes de iniciar la aplicación.
+   
 	Reemplaza los valores de ejemplo con tus credenciales reales:
 
 		export GOOGLE_API_KEY=<api_key>
@@ -85,14 +153,13 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 		export PG_USER="<tu_usuario_de_postgresql>"
 		export PG_PASSWORD="<tu_contraseña_de_postgresql>"
 		export PG_DATABASE="<tu_base_de_datos_de_postgresql>"
+  		
 
-   		Nota: Para un entorno de producción, se recomienda usar un método más seguro para gestionar estas variables, como AWS Secrets Manager o un archivo .env cargado de forma segura.
-
-8. Iniciar la Aplicación
+9. Iniciar la Aplicación
 
 	Una vez que las variables de entorno están configuradas, puedes iniciar el servidor Uvicorn. Es importante usar el flag --workers 1 para la carga de modelos.
 	
-	uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
+	uvicorn Main_production:app --host 0.0.0.0 --port 8000 --workers 1
 	
 	#Si todo está configurado correctamente, verás en la consola que los modelos se cargan desde S3 y que la aplicación se inicia sin errores.
 
