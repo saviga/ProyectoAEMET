@@ -25,12 +25,12 @@ Para ejecutar este proyecto, necesitas tener instalados los siguientes component
 
  	-EC2( con clave .pem para su conexión SSH , grupo de seguridad con permisos de entrada y salida de trafico acorde a los puertos a utilizar)
 
-  	-RDS
+  	-RDS(configurada para tráfico necesario)
 
     -Acceso a AWS (con credenciales configuradas para S3)
 
  	-Crear Lambdas con los archivos LambdaS3(para extraer datos de la API y guardarlos en S3) y lambdaBD(para guardar los datos extraidos en RDS)
-  
+  		<recuerde establecer las variables de entorno en la configuracion de las lambdas>
   	
 
 **⚙️Instalación y Configuración**
