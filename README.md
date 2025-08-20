@@ -30,7 +30,7 @@ Para ejecutar este proyecto, necesitas tener instalados los siguientes component
     -Acceso a AWS (con credenciales configuradas para S3)
 
  	-Crear Lambdas con los archivos LambdaS3(para extraer datos de la API y guardarlos en S3) y lambdaBD(para guardar los datos extraidos en RDS)
-  		<recuerde establecer las variables de entorno en la configuracion de las lambdas>
+  		<recuerde establecer las variables de entorno en la configuracion de las lambdas y las capas necesarias para las librerias>
   	
 
 **⚙️Instalación y Configuración**
