@@ -96,13 +96,9 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 		git sparse-checkout set --no-cone		
 
 
-
-
-
 	    <Instalación de dependencias>
 		 pip install -r requirements.txt
   
-
    
     -B. Cree un Bucket S3 en su consola de AWS y  suba el contenido de la carpeta API además de los archivos 
     production_weather_model.pth, scaler_X_production.joblib y scaler_y_production.joblib que se encuentran
@@ -131,19 +127,23 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
    				<Tras crear el rol, asignelo a su instancia EC2>
 
-   
-    <descarge el contenido de su S3 directamente a su instancia EC2>
-   
-    aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
-   
 
 
- 
-	    <Instalación de dependencias>
-		 pip install -r requirements.txt
 
-		
-   
+
+
+		    <Descarga archivos desde S3 a EC2>
+		   
+		    aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
+		   
+
+
+	 
+		    <Instalación de dependencias>
+			 pip install -r requirements.txt
+	
+			
+	   
   
 
 8. Configurar las Variables de Entorno
