@@ -106,7 +106,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
    
 			<Asegúrese de que su instancia EC2 tenga los permisos necesarios para acceder a S3>
 
-   				<Para ello, acceda a IAM en AWS y crea un nuevo rol con la siguiente politica>
+   				<Para ello, acceda a IAM en AWS y cree un nuevo rol con la siguiente politica>
    					{
 					    "Version": "2012-10-17",
 					    "Statement": [
