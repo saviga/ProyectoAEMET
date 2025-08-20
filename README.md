@@ -1,6 +1,6 @@
 🌍 **API de Predicción de Temperatura y Asistente Gemini sobre AEMET** 
 
-Bienvenido al repositorio de la API de Predicción de Temperatura y Asistente Gemini. Este proyecto es un servicio web basado en FastAPI que combina un modelo de Machine Learning de tipo Encoder-Decoder para predecir la temperatura y un asistente virtual integrado para consultas de datos históricos.
+Bienvenido al repositorio de la API de Predicción de Temperatura y Asistente Gemini. Este proyecto es un servicio web basado en FastAPI que combina un modelo hibrido de Machine Learning para predecir la temperatura y un asistente virtual integrado para consultas de datos históricos.
 
 La API se despliega en una instancia de AWS EC2 y utiliza PostgreSQL como base de datos para almacenar datos meteorológicos históricos. Los modelos de ML se cargan desde un bucket de S3 para una gestión de recursos eficiente.
 
