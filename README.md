@@ -34,17 +34,17 @@ Para ejecutar este proyecto, necesitas tener instalados los siguientes component
 Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una instancia de EC2.
 
 
-1. Clonar el Repositorio
+**1. Clonar el Repositorio**
    
 	git clone <url_repositorio>
  
 	cd <nombre_de_tu_repositorio>
 
-2. Otorgar permisos a tu clave .pem para permitir la conexion ssh a EC2
+**2. Otorgar permisos a tu clave .pem para permitir la conexion ssh a EC2**
    
    chmod 400 /ruta_a_su_clave_pem/nombre_clave.pem
    
-3. Conexion SSH a su instancia EC2
+**3. Conexion SSH a su instancia EC2**
    
    ssh -v -i '/ruta_a_su_clave_pem/nombre_clave.pem' ec2-user@<ip_publica_ec2>
    
@@ -52,7 +52,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
    
    <ec2-user cambia según la AMI (Amazon Machine Image) que uses para lanzar la instancia EC2>
 
-4. Configurar el Entorno Virtual y dependencias
+**4. Configurar el Entorno Virtual y dependencias**
    
     sudo yum update -y
    
@@ -62,13 +62,13 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 	source venv/bin/activate	
 
 
-5. Creación directorio
+**5. Creación directorio**
    
     mkdir /home/ec2-user/fastapi_app
    
 	cd /home/ec2-user/fastapi_app
 
-6. Descargar contenido desde Github o S3  e instalar dependencias
+**6. Descargar contenido desde Github o S3  e instalar dependencias**
    
 	 -A. Copie los archivos necesarios directamente desde su repositorio de Github
    
@@ -104,7 +104,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
     production_weather_model.pth, scaler_X_production.joblib y scaler_y_production.joblib que se encuentran
     en la carpeta de streamlit.
    
-			<Asegúrese de que su instancia EC2 tenga los permisos necesarios para acceder a S3>
+			**<Asegúrese de que su instancia EC2 tenga los permisos necesarios para acceder a S3>**
 
    				<Para ello, acceda a IAM en AWS y cree un nuevo rol con la siguiente politica>
    					{
@@ -125,17 +125,17 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 					    ]
 					}
 
-   				<Tras crear el rol, asignelo a su instancia EC2>
+   				**<Tras crear el rol, asignelo a su instancia EC2>**
 
 
 
 
 
 
-		    <Descarge archivos desde S3 a EC2>		   
+		    **<Descarge archivos desde S3 a EC2>**
 		    aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
 		   	 
-		    <Instalación de dependencias>
+		    **<Instalación de dependencias>**
 			 pip install -r requirements.txt
 
    
@@ -143,7 +143,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 	   
   
 
-8. Configurar las Variables de Entorno
+**7. Configurar las Variables de Entorno**
    
 	El proyecto usa variables de entorno para conectarse a la base de datos PostgreSQL.
     Debes definirlas en tu terminal antes de iniciar la aplicación.
@@ -158,7 +158,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 		export PG_DATABASE="<tu_base_de_datos_de_postgresql>"
   		
 
-9. Iniciar la Aplicación
+**8. Iniciar la Aplicación**
 
 	Una vez que las variables de entorno están configuradas, puedes iniciar el servidor Uvicorn. Es importante usar el flag --workers 1 para la carga de modelos.
 	
