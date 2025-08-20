@@ -132,16 +132,13 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
 
 
-		    <Descarga archivos desde S3 a EC2>
-		   
+		    <Descarge archivos desde S3 a EC2>		   
 		    aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
-		   
-
-
-	 
+		   	 
 		    <Instalación de dependencias>
 			 pip install -r requirements.txt
-	
+
+   
 			
 	   
   
