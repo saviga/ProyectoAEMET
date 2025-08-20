@@ -98,8 +98,9 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
 
 
-    <instalamos las dependencias que hemos especificado en nuestro requirements.txt>
-	 pip install -r requirements.txt
+
+	    <Instalación de dependencias>
+		 pip install -r requirements.txt
   
 
    
@@ -136,9 +137,10 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
     aws s3 sync s3://<ruta_a_su_archivo>/nombre_archivo/ .
    
 
+
  
-    <instalamos las dependencias que hemos especificado en requirements.txt>
-	 pip install -r requirements.txt
+	    <Instalación de dependencias>
+		 pip install -r requirements.txt
 
 		
    
