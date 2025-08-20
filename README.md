@@ -237,6 +237,3 @@ Las contribuciones son bienvenidas. Si tienes ideas para mejorar, abre un *issue
 
 	Esto te llevará directamente a la interfaz de Swagger UI, donde podrás explorar y probar todos los endpoints de tu API.
 
-## 📝 Licencia
-
-Este proyecto está bajo la licencia MIT.
